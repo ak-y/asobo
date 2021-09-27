@@ -1,9 +1,0 @@
-
-<form method="post" action="{% url 'calendarapp:register' %}">
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-
-    <button name="submit">Register</button>
-
-</form>
