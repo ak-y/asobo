@@ -1,0 +1,21 @@
+{% extends 'calendarapp/base.html' %}
+{% load static %}
+
+{% block header %}
+<link rel='stylesheet' type="text/css" href="{% static 'style.css' %}">
+{% endblock header %}
+
+{% block content %}
+    <h1>
+    {% for request in requests %}
+        {{ request.requester_name }}
+        {{ request.requester_mail_address }}
+        {{ request.message }}
+        {{ request.admin_message }}
+        {{ request.start_at }}
+    {% endfor %}
+    {% for user in users %}
+        {{ user.username }}
+    {% endfor %}
+    <h1>
+{% endblock content %}
