@@ -2,7 +2,6 @@
 {% load static %}
 
 {% block header %}
-<link rel='stylesheet' type="text/css" href="{% static 'style.css' %}">
 <script src="{% static 'croissant/fullcalendar/main.js' %}"></script>
 <script src="{% static 'croissant/fullcalendar/calender.js' %}"></script>
 
@@ -18,6 +17,13 @@ document.addEventListener('DOMContentLoaded', function() {
 {% endblock header %}
 
 {% block content %}
-
+<div class="menu">
+    <i class="bi bi-caret-left" style="font-size: 300%;"></i>
+    <i class="bi bi-caret-right" style="font-size: 300%;"></i>
+    <button type="button" class="btn btn-secondary">today</button>
+    <button type="button" class="btn btn-secondary">share</button>
+    <button type="button" class="btn btn-secondary">request</button>
+    <button type="button" class="btn btn-secondary">logout</button>
+</div>
 <div id="calendar">a</div>
 {% endblock content %}
