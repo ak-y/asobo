@@ -35,13 +35,13 @@ def signin(request):
     return render(request, 'calendarapp/signin.html')
 
 
-@login_required
+# @login_required
 def main(request):
-    requests = Request.objects.all()
-    users = User.objects.all()
+#     requests = Request.objects.all()
+#     users = User.objects.all()
     return render(request, 'calendarapp/main.html', {
-        'requests': requests,
-        'users': users
+#         'requests': requests,
+#         'users': users
     })
 
 

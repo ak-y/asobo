@@ -3,19 +3,21 @@
 
 {% block header %}
 <link rel='stylesheet' type="text/css" href="{% static 'style.css' %}">
+<script src="{% static 'croissant/fullcalendar/main.js' %}"></script>
+<script src="{% static 'croissant/fullcalendar/calender.js' %}"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var calendarEl = document.getElementById('calendar');
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+      initialView: 'dayGridMonth'　// オプション　（月表示）
+    });
+    calendar.render();　// カレンダーの初期化（再レンダリング）
+});
+</script>
 {% endblock header %}
 
 {% block content %}
-    <h1>
-    {% for request in requests %}
-        {{ request.requester_name }}
-        {{ request.requester_mail_address }}
-        {{ request.message }}
-        {{ request.admin_message }}
-        {{ request.start_at }}
-    {% endfor %}
-    {% for user in users %}
-        {{ user.username }}
-    {% endfor %}
-    <h1>
+
+<div id="calendar">a</div>
 {% endblock content %}
