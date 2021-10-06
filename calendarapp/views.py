@@ -20,6 +20,8 @@ API_VERSION = 'v3'
 import os
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 
+import datetime
+
 
 
 # Create your views here.
@@ -75,14 +77,44 @@ def main(request):
         service = googleapiclient.discovery.build(
             API_SERVICE_NAME, API_VERSION, credentials=credentials)
 
+        # 以降、カレンダーから予定を取ってくるまでの処理
+        # カレンダーのリスト取得
+        calendar_id_list = list()
         page_token = None
         while True:
-            events = service.events().list(calendarId='primary', pageToken=page_token, timeMin='2021-10-05T00:00:00+09:00', timeMax='2021-11-01T00:00:00+09:00').execute()
-            for event in events['items']:
-                print(event['summary'])
-            page_token = events.get('nextPageToken')
+            calendar_list = service.calendarList().list(pageToken=page_token).execute()
+            for calendar_list_entry in calendar_list['items']:
+                calendar_id_list.append(calendar_list_entry['id'])
+            page_token = calendar_list.get('nextPageToken')
             if not page_token:
                 break
+
+        # 現在日時と1年後の日時をISOフォーマットで取得
+        dt_now = datetime.datetime.now()
+        dt_now_iso = dt_now.isoformat()[:19] + 'Z'
+        dt_90d_later_iso = (dt_now + datetime.timedelta(days=90)).isoformat()[:19] + 'Z'
+
+        # calendar_id_listに追加したそれぞれのカレンダーからイベントを取得
+        # イベントの「タイトル(summary)、開始日時(start)、終了日時(end)」の情報を辞書形式で持ったevent_infoを作成し、それをevent_listに追加
+        event_list = list()
+        for calendar_id in calendar_id_list:
+            page_token = None
+            while True:
+                events = service.events().list(calendarId=calendar_id, pageToken=page_token, timeMin=dt_now_iso, timeMax=dt_90d_later_iso).execute()
+                for event in events['items']:
+                    event_info = dict()
+                    event_info['summary'] = event['summary']
+                    if 'dateTime' in event['start']: # ISO表記
+                        event_info['start'] = event['start']['dateTime'][:19] # 秒以下を取り除く
+                        event_info['end'] = event['end']['dateTime'][:19]
+                    elif 'date' in event['start']:   # all-dayのイベント、ハイフンでつないだ表記
+                        event_info['start'] = event['start']['date']
+                        event_info['end'] = event['end']['date']
+                    event_list.append(event_info)
+                page_token = events.get('nextPageToken')
+                if not page_token:
+                    break
+
 
         # Save credentials back to session in case access token was refreshed.
         # ACTION ITEM: In a production app, you likely want to save these credentials in a persistent database instead.
@@ -90,7 +122,9 @@ def main(request):
 
         request.session.clear()
 
-        return render(request, 'calendarapp/main.html')
+        return render(request, 'calendarapp/main.html', {
+            'event_list': event_list,
+        })
 
 
 def authorize(request):
@@ -144,7 +178,15 @@ def signout(request):
 
 
 def requester_main(request):
-    pass
+    # adminのidなどからcredentialsを取ってくる処理
+
+    service = googleapiclient.discovery.build(
+        API_SERVICE_NAME, API_VERSION, credentials=credentials)
+
+    # freebusy (90days)
+
+    return render(request, 'calendarapp/request.html')
+
 
 def credentials_to_dict(credentials):
     return {'token': credentials.token,
