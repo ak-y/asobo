@@ -172,8 +172,10 @@ def requester_main(request):
 
         # event_list = get_event_list(calendar_id_list, service, dt_now_iso, dt_90d_later_iso)
 
-        # return render(request, 'calendarapp/request.html')
+        # return render(request, 'calendarapp/requester_main.html')
         pass
+
+
 
 
 def credentials_to_dict(credentials):
