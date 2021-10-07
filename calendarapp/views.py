@@ -8,6 +8,10 @@ from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 
+def index(request):
+    return render(request, 'calendarapp/index.html')
+
+
 def register(request):
     if request.method == "POST":
         username =  request.POST['username']
