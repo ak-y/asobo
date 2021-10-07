@@ -185,7 +185,7 @@ def requester_main(request):
 
     # freebusy (90days)
 
-    return render(request, 'calendarapp/request.html')
+    return render(request, 'calendarapp/requester_main.html')
 
 
 def credentials_to_dict(credentials):

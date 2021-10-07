@@ -8,6 +8,9 @@
 <script src= "https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
 
 <script>
+    var events = {{ event_list|safe }};
+    console.log(events[2].summary)
+
     document.addEventListener('DOMContentLoaded', function() {
         var calendarEl = document.getElementById('calendar');
 
@@ -38,7 +41,7 @@
                     text: 'share',
                     click: function() {
                         swal({
-                          title: "https://github.com/yamato-1205/Croissant",
+                          title: "http://127.0.0.1:8000/calendar/requester_main",
                           text: "友達にシェアしよう！",
                           icon: "success",
                           button: "閉じる",
@@ -62,23 +65,11 @@
             selectMirror: true,
             dayMaxEvents: true, // allow "more" link when too many events
 
-            events: [
-                {
-                title: 'お試し',
-                start: '2021-10-06T10:00:00',
-                end: '2021-10-06T15:00:00',
-                },
-                {
-                title: 'お試し2',
-                start: '2021-10-06T10:00:00',
-                end: '2021-10-06T12:00:00',
-                },
-                {
-                title: 'お試し3',
-                start: '2021-10-07T10:00:00',
-                end: '2021-10-07T15:00:00',
-                }
-            ]
+            eventSources: [{
+                events:events,
+                color: 'gray',
+                textColor: 'black'
+            }]
         });
 
         calendar.render();
