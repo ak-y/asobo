@@ -2,45 +2,51 @@
 {% load static %}
 
 {% block header %}
-<link href="{% static 'croissant/fullcalendar/main.css' %}" rel='stylesheet' />
+<!--fullcalendar-->
+<link href="{% static 'croissant/fullcalendar/main.css' %}" rel='stylesheet'/>
 <script src="{% static 'croissant/fullcalendar/main.js' %}"></script>
 <!-- ポップアップ表示のライブラリSweetAlert -->
-<script src= "https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
 
+
+<!--fullcalendarの設定-->
 <script>
-    var events = {{ event_list|safe }};
-    console.log(events[2].summary)
-
     document.addEventListener('DOMContentLoaded', function() {
+<!--views.pyからeventデータ取得-->
+        var events = {{ event_list|safe }};
         var calendarEl = document.getElementById('calendar');
-
+<!--fullcalendarの詳細設定-->
         var calendar = new FullCalendar.Calendar(calendarEl, {
-            locale: 'ja',
-            firstDay: (new Date()).getDay(),
+            locale: 'ja',// 日本語
+            firstDay: (new Date()).getDay(),// 開始日の設定
             validRange: {
                 start: new Date()
             },
-            scrollTime: '08:00',
-            initialView: 'timeGridWeek',
-            nowIndicator: false,
-            allDaySlot: false,
+            scrollTime: '08:00',// 開始時間の設定
+            initialView: 'timeGridWeek',//　カレンダーの種類
+            nowIndicator: false,//　現在時刻の目印表示
+            allDaySlot: false,// 終日イベント欄の表示
+<!--オリジナルボタンの作成-->
             customButtons: {
+<!--ログアウトボタン-->
                 logout: {
                     text: 'logout',
                     click: function() {
-                        alert('clicked the logout button!');
+                        location.href = "http://127.0.0.1:8000/calendar/signout"
                     }
                 },
+<!--リクエストボタン-->
                 request: {
                     text: 'request',
                     click: function() {
-                        alert('clicked the request button!');
+                        location.href = "http://127.0.0.1:8000/calendar/request"
                     }
                 },
+<!--シェアボタン-->
                 share: {
                     text: 'share',
                     click: function() {
-                        swal({
+                        Swal.fire({
                             title: "http://127.0.0.1:8000/calendar/requester_main",
                             text: "友達にシェアしよう！",
                             icon: "success",
@@ -49,22 +55,53 @@
                     }
                 }
             },
+<!--ツールバーのボタン設定-->
             headerToolbar: {
                 left: 'prev,next today',
                 center: 'title',
-                right: 'share,request,logout'
+                right: 'share request logout'
             },
+<!--イベントクリック時のアクション-->
             eventClick: function(info) {
-                alert('Evet: ' + info.event.title);
-            },
+               var inputOptions = {
+                      ok: '承認',
+                      no: '未承認',
+                };
 
+               Swal.fire({
+                  title: 'リクエスト承認',
+                  confirmButtonText: '次へ',
+                  input: 'radio',
+                  inputOptions: inputOptions,
+                  inputValidator: (value) => {
+                    if (!value) {
+                        return '承認、未承認を選択してください。'
+                    } else {
+                        Swal.fire({
+                            title: 'コメント記入',
+                            input: 'textarea',
+                            inputLabel: 'コメントを記入できます。',
+                            inputPlaceholder: '(例)じゃあ、○○に集合ね！/ごめん、その日は厳しいかも…',
+                            confirmButtonText: '送信',
+                            preConfirm: function() {
+                                Swal.fire({
+                                    title: "送信されました！",
+                                    icon: "success",
+                                    button: "閉じる",
+                                })
+                            }
+                        })
+                    }
+                  }
+               })
+            },
 
             navLinks: false, // can click day/week names to navigate views
             editable: false,
             selectable: false,
             selectMirror: true,
             dayMaxEvents: true, // allow "more" link when too many events
-
+<!--イベント情報入力-->
             eventSources: [{
                 events:events,
                 color: 'gray',
@@ -75,9 +112,11 @@
         calendar.render();
     });
 
+
 </script>
 {% endblock header %}
 
 {% block content %}
+<!--これだけでカレンダー表示-->
 <div id="calendar"></div>
 {% endblock content %}
