@@ -1,0 +1,25 @@
+* {
+  margin:0; padding:0;
+}
+header {
+  width: 100%;
+  padding: 15px 0;
+  margin: 0 auto;
+  text-align: center;
+}
+header .headline{
+  font-size: 32px;
+  color: #ffa500;
+  font-family: fantasy;
+}
+
+footer {
+  width: 100%;
+  height: 120px;
+  text-align: center;
+  padding: 50px 0;
+  background-color: #ffffff;
+}
+.footer-text {
+  color: #fff;
+}

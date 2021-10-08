@@ -1,0 +1,22 @@
+.button{
+    background-color: #ffa500;
+    color:white;
+    padding:30px;
+    border-style: none;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+    width:50%;
+    font-size: 32px;
+    margin: auto;
+}
+.button:hover{
+    background-color: d2691e;
+    color:white;
+}
+p.p0 {
+    margin-bottom: 5em;
+}
+p.p1 {
+    margin-bottom: 3em;
+}
