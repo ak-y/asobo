@@ -5,7 +5,7 @@
 <link href="{% static 'croissant/fullcalendar/main.css' %}" rel='stylesheet' />
 <script src="{% static 'croissant/fullcalendar/main.js' %}"></script>
 <!-- ポップアップ表示のライブラリSweetAlert -->
-<script src= "https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
 
 <script>
 
@@ -26,8 +26,7 @@
                 login: {
                     text: 'login your calendar',
                     click: function() {
-                        alert('clicked the login button!');
-                    }
+                        }
                 },
 
             },
@@ -39,9 +38,42 @@
 
             navLinks: false, // can click day/week names to navigate views
             editable: false,
-            selectable: false,
+            selectable: true,
             selectMirror: true,
             dayMaxEvents: true, // allow "more" link when too many events
+
+            dateClick: function() {
+                var inputOptions = new Promise(function(resolve) {
+                    resolve({
+                      '#ff0000': '承認',
+                      '#00ff00': '未承認',
+                    });
+                });
+
+                Swal.fire({
+                  title: 'リクエスト承認',
+                  confirmButtonText: '次へ',
+                  input: 'radio',
+                  inputOptions: inputOptions,
+                  inputValidator: function(result) {
+                    return new Promise(function(resolve, reject) {
+                      if (result) {
+                        resolve();
+                      } else {
+                        reject('承認するかどうかを選択してください');
+                      }
+                    });
+                  },
+                }).then(function(result) {
+                  Swal.fire({
+                    title: 'コメント記入',
+                    input: 'textarea',
+                    inputLabel: 'コメントを記入できます。',
+                    inputPlaceholder: '(例)じゃあ、○○に集合ね！/ごめん、その日は厳しいかも…',
+                    confirmButtonText: '送信',
+                  });
+                })
+            },
 
             eventSources: [{
                 events: [{
