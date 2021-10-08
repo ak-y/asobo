@@ -2,28 +2,32 @@
 {% load static %}
 
 {% block header %}
+<!--fullcalendar-->
 <link href="{% static 'croissant/fullcalendar/main.css' %}" rel='stylesheet' />
 <script src="{% static 'croissant/fullcalendar/main.js' %}"></script>
 <!-- ポップアップ表示のライブラリSweetAlert -->
-<script src= "https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
 
+
+<!--fullcalendarの設定-->
 <script>
+<!--views.pyからeventデータ取得-->
     var events = {{ event_list|safe }};
-    console.log(events[2].summary)
 
     document.addEventListener('DOMContentLoaded', function() {
         var calendarEl = document.getElementById('calendar');
-
+<!--fullcalendarの詳細設定-->
         var calendar = new FullCalendar.Calendar(calendarEl, {
-            locale: 'ja',
-            firstDay: (new Date()).getDay(),
+            locale: 'ja',// 日本語
+            firstDay: (new Date()).getDay(),// 開始日の設定
             validRange: {
                 start: new Date()
             },
-            scrollTime: '08:00',
-            initialView: 'timeGridWeek',
-            nowIndicator: false,
-            allDaySlot: false,
+            scrollTime: '08:00',// 開始時間の設定
+            initialView: 'timeGridWeek',//　カレンダーの種類
+            nowIndicator: false,//　現在時刻の目印表示
+            allDaySlot: false,// 終日イベント欄の表示
+<!--オリジナルボタンの作成-->
             customButtons: {
                 logout: {
                     text: 'logout',
@@ -40,7 +44,7 @@
                 share: {
                     text: 'share',
                     click: function() {
-                        swal({
+                        Swal.fire({
                           title: "http://127.0.0.1:8000/calendar/requester_main",
                           text: "友達にシェアしよう！",
                           icon: "success",
@@ -49,22 +53,23 @@
                     }
                 }
             },
+<!--ツールバーのボタン設定-->
             headerToolbar: {
                 left: 'prev,next today',
                 center: 'title',
                 right: 'share,request,logout'
             },
+<!--イベントクリック時のアクション-->
             eventClick: function(info) {
-                alert('Evet: ' + info.event.title);
-            },
 
+            },
 
             navLinks: false, // can click day/week names to navigate views
             editable: false,
             selectable: false,
             selectMirror: true,
             dayMaxEvents: true, // allow "more" link when too many events
-
+<!--イベント情報入力-->
             eventSources: [{
                 events:events,
                 color: 'gray',
@@ -79,5 +84,6 @@
 {% endblock header %}
 
 {% block content %}
+<!--これだけでカレンダー表示-->
 <div id="calendar"></div>
 {% endblock content %}

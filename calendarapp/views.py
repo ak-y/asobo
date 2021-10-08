@@ -180,8 +180,8 @@ def signout(request):
 def requester_main(request):
     # adminのidなどからcredentialsを取ってくる処理
 
-    service = googleapiclient.discovery.build(
-        API_SERVICE_NAME, API_VERSION, credentials=credentials)
+    #service = googleapiclient.discovery.build(
+    #    API_SERVICE_NAME, API_VERSION, credentials=credentials)
 
     # freebusy (90days)
 
