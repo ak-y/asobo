@@ -32,7 +32,7 @@
                 logout: {
                     text: 'logout',
                     click: function() {
-                        location.href = "http://127.0.0.1:8000/calendar/signin"
+                        location.href = "http://127.0.0.1:8000/calendar/signout"
                     }
                 },
 <!--リクエストボタン-->
@@ -46,7 +46,7 @@
                 share: {
                     text: 'share',
                     click: function() {
-                        swal({
+                        Swal.fire({
                             title: "http://127.0.0.1:8000/calendar/requester_main",
                             text: "友達にシェアしよう！",
                             icon: "success",
