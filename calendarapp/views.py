@@ -178,14 +178,41 @@ def signout(request):
 
 
 def requester_main(request):
-    # adminのidなどからcredentialsを取ってくる処理
+    if request.method == 'POST':
+        # user = # from URL maybe
+        # requester_name = request.POST['requester_name']
+        # requester_mail_adress = request.POST['requester_mail_adress']
+        # message = request.POST['message']
+        # start_at = request.POST['start_at']
+        # end_at = request.POST['end_at']
 
-    #service = googleapiclient.discovery.build(
-    #    API_SERVICE_NAME, API_VERSION, credentials=credentials)
+        # request = Request.objects.create(user=user, requester_name=requester_name,requester_mail_adress=requester_mail_adress, message=message, start_at=start_at, end_at=end_at)
 
-    # freebusy (90days)
+        pass
 
-    return render(request, 'calendarapp/requester_main.html')
+    else:
+        user = request.user
+        credentials_dict = json.loads(Calendar.objects.get(user=user).credentials)
+        credentials = google.oauth2.credentials.Credentials(
+            token = credentials_dict["token"],
+            refresh_token = credentials_dict["refresh_token"],
+            token_uri = credentials_dict["token_uri"],
+            client_id = credentials_dict["client_id"],
+            client_secret = credentials_dict["client_secret"],
+            scopes = credentials_dict["scopes"])
+
+        service = googleapiclient.discovery.build(
+            API_SERVICE_NAME, API_VERSION, credentials=credentials)
+
+        calendar_id_list = get_calendar_id_list(service)
+
+        dt_now_iso, dt_90d_later_iso = get_datetime()
+
+        event_list = get_event_list(calendar_id_list, service, dt_now_iso, dt_90d_later_iso)
+
+        return render(request, 'calendarapp/requester_main.html', {
+            'event_list': event_list,
+        })
 
 
 def credentials_to_dict(credentials):
