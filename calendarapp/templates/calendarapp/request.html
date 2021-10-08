@@ -1,0 +1,21 @@
+{% extends 'calendarapp/base.html' %}
+
+{% block header %}
+    <title>リクエスト一覧</title>
+{% endblock header %}
+
+{% block content %}
+    <h1 class="h3 mb-3 fw-normal">リクエスト一覧</h1>
+    {% for request in requests %}
+        <div class="list-group">
+            <a href="#" class="list-group-item list-group-item-action">
+                <p>名前：{{ request.requester_name }}</p>
+                <p>日時：{{ request.start_at }} ～ {{ request.end_at }}</p>
+                <p>メッセージ：{{ request.message }}</p>
+                <p>送信日時：{{ request.created_at }}</p>
+            </a>
+        </div>
+    {% empty %}
+        <p>リクエストはありません</p>
+    {% endfor %}
+{% endblock content %}

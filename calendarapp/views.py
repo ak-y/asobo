@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
-from .models import Request
+from .models import Request, Calendar
 from django.db import IntegrityError
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -21,6 +21,7 @@ import os
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 
 import datetime
+import json
 
 
 
@@ -32,7 +33,9 @@ def register(request):
         password = request.POST['password']
         try:
             User.objects.create_user(username, '', password)
-            return redirect('signin')
+            user = authenticate(request, username=username, password=password)
+            login(request, user)
+            return redirect('authorize')
         except IntegrityError:
             return render(request, 'calendarapp/register.html', {
                 'error': 'このユーザーは既に登録されています'
@@ -58,13 +61,8 @@ def main(request):
     if request.method == 'POST':
         pass
     else:
-        if 'credentials' not in request.session:
-            return redirect('authorize')
-
-        # below is in case utilizing json-type-credentials by storing credentials in database
-        # credentials = google.oauth2.credentials.Credentials(request.session['credentials'])
-
-        credentials_dict = request.session['credentials']
+        user = request.user
+        credentials_dict = json.loads(Calendar.objects.get(user=user).credentials)
         credentials = google.oauth2.credentials.Credentials(
             token = credentials_dict["token"],
             refresh_token = credentials_dict["refresh_token"],
@@ -77,50 +75,18 @@ def main(request):
         service = googleapiclient.discovery.build(
             API_SERVICE_NAME, API_VERSION, credentials=credentials)
 
-        # 以降、カレンダーから予定を取ってくるまでの処理
         # カレンダーのリスト取得
-        calendar_id_list = list()
-        page_token = None
-        while True:
-            calendar_list = service.calendarList().list(pageToken=page_token).execute()
-            for calendar_list_entry in calendar_list['items']:
-                calendar_id_list.append(calendar_list_entry['id'])
-            page_token = calendar_list.get('nextPageToken')
-            if not page_token:
-                break
+        calendar_id_list = get_calendar_id_list(service)
 
         # 現在日時と1年後の日時をISOフォーマットで取得
-        dt_now = datetime.datetime.now()
-        dt_now_iso = dt_now.isoformat()[:19] + 'Z'
-        dt_90d_later_iso = (dt_now + datetime.timedelta(days=90)).isoformat()[:19] + 'Z'
+        dt_now_iso, dt_90d_later_iso = get_datetime()
 
         # calendar_id_listに追加したそれぞれのカレンダーからイベントを取得
-        # イベントの「タイトル(summary)、開始日時(start)、終了日時(end)」の情報を辞書形式で持ったevent_infoを作成し、それをevent_listに追加
-        event_list = list()
-        for calendar_id in calendar_id_list:
-            page_token = None
-            while True:
-                events = service.events().list(calendarId=calendar_id, pageToken=page_token, timeMin=dt_now_iso, timeMax=dt_90d_later_iso).execute()
-                for event in events['items']:
-                    event_info = dict()
-                    event_info['summary'] = event['summary']
-                    if 'dateTime' in event['start']: # ISO表記
-                        event_info['start'] = event['start']['dateTime'][:19] # 秒以下を取り除く
-                        event_info['end'] = event['end']['dateTime'][:19]
-                    elif 'date' in event['start']:   # all-dayのイベント、ハイフンでつないだ表記
-                        event_info['start'] = event['start']['date']
-                        event_info['end'] = event['end']['date']
-                    event_list.append(event_info)
-                page_token = events.get('nextPageToken')
-                if not page_token:
-                    break
+        event_list = get_event_list(calendar_id_list, service, dt_now_iso, dt_90d_later_iso)
 
-
+        # UPDATE database?
         # Save credentials back to session in case access token was refreshed.
-        # ACTION ITEM: In a production app, you likely want to save these credentials in a persistent database instead.
-        request.session['credentials'] = credentials_to_dict(credentials)
-
-        request.session.clear()
+        # request.session['credentials'] = credentials_to_dict(credentials)
 
         return render(request, 'calendarapp/main.html', {
             'event_list': event_list,
@@ -146,6 +112,7 @@ def authorize(request):
 
 
 def oauth2callback(request):
+    user = request.user
     # Specify the state when creating the flow in the callback so that it can
     # verified in the authorization server response.
     state = request.session['state']
@@ -158,18 +125,21 @@ def oauth2callback(request):
     authorization_response = request.build_absolute_uri()
     flow.fetch_token(authorization_response=authorization_response)
 
-    # Store credentials in the session.
-    # ACTION ITEM: In a production app, you likely want to save these
-    #              credentials in a persistent database instead.
+    # Store credentials in the database.
     credentials = flow.credentials
-    request.session['credentials'] = credentials_to_dict(credentials)
+    credentials = json.dumps(credentials_to_dict(credentials))
+    Calendar.objects.create(user=user, credentials=credentials)
 
     return redirect('main')
 
 
 @login_required
 def request(request):
-    pass
+    user = request.user
+    requests = Request.objects.filter(user=user, is_accepted=None)
+    return render(request, 'calendarapp/request.html', {
+        'requests': requests
+    })
 
 
 def signout(request):
@@ -178,14 +148,34 @@ def signout(request):
 
 
 def requester_main(request):
-    # adminのidなどからcredentialsを取ってくる処理
+    if request.method == 'POST':
+        # user = # from URL maybe
+        # requester_name = request.POST['requester_name']
+        # requester_mail_adress = request.POST['requester_mail_adress']
+        # message = request.POST['message']
+        # start_at = request.POST['start_at']
+        # end_at = request.POST['end_at']
 
-    service = googleapiclient.discovery.build(
-        API_SERVICE_NAME, API_VERSION, credentials=credentials)
+        # request = Request.objects.create(user=user, requester_name=requester_name,requester_mail_adress=requester_mail_adress, message=message, start_at=start_at, end_at=end_at)
 
-    # freebusy (90days)
+        pass
 
-    return render(request, 'calendarapp/requester_main.html')
+    else:
+        # adminのidなどをもとにデータベースからcredentialsを取ってくる処理
+
+        # service = googleapiclient.discovery.build(
+        #     API_SERVICE_NAME, API_VERSION, credentials=credentials)
+
+        # calendar_id_list = get_calendar_id_list(service)
+
+        # dt_now_iso, dt_90d_later_iso = get_datetime()
+
+        # event_list = get_event_list(calendar_id_list, service, dt_now_iso, dt_90d_later_iso)
+
+        # return render(request, 'calendarapp/requester_main.html')
+        pass
+
+
 
 
 def credentials_to_dict(credentials):
@@ -195,3 +185,48 @@ def credentials_to_dict(credentials):
             'client_id': credentials.client_id,
             'client_secret': credentials.client_secret,
             'scopes': credentials.scopes}
+
+
+def get_datetime():
+    dt_now = datetime.datetime.now()
+    dt_now_iso = dt_now.isoformat()[:19] + 'Z'
+    dt_90d_later_iso = (dt_now + datetime.timedelta(days=90)).isoformat()[:19] + 'Z'
+    return (dt_now_iso, dt_90d_later_iso)
+
+
+def get_calendar_id_list(service):
+    calendar_id_list = list()
+    page_token = None
+    while True:
+        calendar_list = service.calendarList().list(pageToken=page_token).execute()
+        for calendar_list_entry in calendar_list['items']:
+            calendar_id_list.append(calendar_list_entry['id'])
+        page_token = calendar_list.get('nextPageToken')
+        if not page_token:
+            break
+
+    return calendar_id_list
+
+
+# イベントの「タイトル(title)、開始日時(start)、終了日時(end)」の情報を辞書形式で持ったevent_infoを作成し、それをevent_listに追加
+def get_event_list(calendar_id_list, service, dt_now_iso, dt_90d_later_iso):
+    event_list = list()
+    for calendar_id in calendar_id_list:
+        page_token = None
+        while True:
+            events = service.events().list(calendarId=calendar_id, pageToken=page_token, timeMin=dt_now_iso, timeMax=dt_90d_later_iso).execute()
+            for event in events['items']:
+                event_info = dict()
+                event_info['title'] = event['summary']
+                if 'dateTime' in event['start']: # ISO表記
+                    event_info['start'] = event['start']['dateTime'][:19] # 秒以下を取り除く
+                    event_info['end'] = event['end']['dateTime'][:19]
+                elif 'date' in event['start']:   # all-dayのイベント、ハイフンでつないだ表記
+                    event_info['start'] = event['start']['date']
+                    event_info['end'] = event['end']['date']
+                event_list.append(event_info)
+            page_token = events.get('nextPageToken')
+            if not page_token:
+                break
+
+    return event_list
