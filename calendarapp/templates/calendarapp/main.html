@@ -11,10 +11,9 @@
 
 <!--fullcalendarの設定-->
 <script>
-<!--views.pyからeventデータ取得-->
-    var events = {{ event_list|safe }};
-
     document.addEventListener('DOMContentLoaded', function() {
+<!--views.pyからeventデータ取得-->
+        var events = {{ event_list|safe }};
         var calendarEl = document.getElementById('calendar');
 <!--fullcalendarの詳細設定-->
         var calendar = new FullCalendar.Calendar(calendarEl, {
@@ -29,18 +28,21 @@
             allDaySlot: false,// 終日イベント欄の表示
 <!--オリジナルボタンの作成-->
             customButtons: {
+<!--ログアウトボタン-->
                 logout: {
                     text: 'logout',
                     click: function() {
-                        alert('clicked the logout button!');
+                        location.href = "http://127.0.0.1:8000/calendar/signin"
                     }
                 },
+<!--リクエストボタン-->
                 request: {
                     text: 'request',
                     click: function() {
-                        alert('clicked the request button!');
+                        location.href = "http://127.0.0.1:8000/calendar/request"
                     }
                 },
+<!--シェアボタン-->
                 share: {
                     text: 'share',
                     click: function() {
@@ -57,11 +59,41 @@
             headerToolbar: {
                 left: 'prev,next today',
                 center: 'title',
-                right: 'share,request,logout'
+                right: 'share request logout'
             },
 <!--イベントクリック時のアクション-->
             eventClick: function(info) {
+               var inputOptions = {
+                      ok: '承認',
+                      no: '未承認',
+                };
 
+               Swal.fire({
+                  title: 'リクエスト承認',
+                  confirmButtonText: '次へ',
+                  input: 'radio',
+                  inputOptions: inputOptions,
+                  inputValidator: (value) => {
+                    if (!value) {
+                        return '承認、未承認を選択してください。'
+                    } else {
+                        Swal.fire({
+                            title: 'コメント記入',
+                            input: 'textarea',
+                            inputLabel: 'コメントを記入できます。',
+                            inputPlaceholder: '(例)じゃあ、○○に集合ね！/ごめん、その日は厳しいかも…',
+                            confirmButtonText: '送信',
+                            preConfirm: function() {
+                                Swal.fire({
+                                    title: "送信されました！",
+                                    icon: "success",
+                                    button: "閉じる",
+                                })
+                            }
+                        })
+                    }
+                  }
+               })
             },
 
             navLinks: false, // can click day/week names to navigate views
