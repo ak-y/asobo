@@ -25,7 +25,7 @@
             scrollTime: '08:00',// 開始時間の設定
             initialView: 'timeGridWeek',//　カレンダーの種類
             nowIndicator: false,//　現在時刻の目印表示
-            allDaySlot: false,// 終日イベント欄の表示
+            allDaySlot: true,// 終日イベント欄の表示
 <!--オリジナルボタンの作成-->
             customButtons: {
 <!--ログアウトボタン-->
@@ -77,6 +77,7 @@
                     if (!value) {
                         return '承認、未承認を選択してください。'
                     } else {
+                        console.log(value),
                         Swal.fire({
                             title: 'コメント記入',
                             input: 'textarea',
