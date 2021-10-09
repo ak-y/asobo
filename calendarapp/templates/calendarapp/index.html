@@ -6,8 +6,17 @@
 {% endblock header %}
 
 {% block content %}
-    <button type="submit" class="button">アカウント登録</button>
+    {% csrf_token %}
+    <div class=”center”>
+        <p>
+            <a href="{{'register'}}" class="btn-square-pop">アカウント登録</a>
+        </p>
+    </div>
     <p class="p1"></p>
-    <button type="submit" class="button">ログイン</button>
+    <div class=”center”>
+        <p>
+            <a href="{{'signin'}}" class="btn-square-pop">ログイン</a>
+        </p>
+    </div>
 
 {% endblock content %}

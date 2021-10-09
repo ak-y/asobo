@@ -1,19 +1,28 @@
-.button{
-    background-color: #ffa500;
-    color:white;
-    padding:30px;
-    border-style: none;
-    -moz-border-radius: 5px;
-    -webkit-border-radius: 5px;
-    border-radius: 5px;
-    width:50%;
-    font-size: 32px;
-    margin: auto;
+.btn-square-pop {
+  position: relative;
+  font-size: 40pt;
+  display: inline-block;
+  padding: 0.25em 0.5em;
+  text-decoration: none;
+  color: #FFF;
+  background: #fd9535;/*背景色*/
+  border-bottom: solid 2px #d27d00;/*少し濃い目の色に*/
+  border-radius: 4px;/*角の丸み*/
+  box-shadow: inset 0 2px 0 rgba(255,255,255,0.2), 0 2px 2px rgba(0, 0, 0, 0.19);
+  font-weight: bold;
 }
-.button:hover{
-    background-color: d2691e;
-    color:white;
+
+.btn-square-pop:active {
+  border-bottom: solid 2px #fd9535;
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.30);
+}
 }
 p.p1 {
-    margin-bottom: 3em;
+    margin-bottom: 5em;
+}
+.center p{
+    text-align: center;
+}
+p {
+  text-align:center;
 }

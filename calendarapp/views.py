@@ -28,6 +28,11 @@ import json
 # Create your views here.
 
 def index(request):
+    if request.method == "POST":
+        if 'register' in request.POST:
+            return render('register')
+        if 'signin' in request.POST:
+            return redirect('signin')
     return render(request, 'calendarapp/index.html')
 
 
