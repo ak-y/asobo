@@ -97,6 +97,9 @@ def main(request):
         # Save credentials back to session in case access token was refreshed.
         # request.session['credentials'] = credentials_to_dict(credentials)
 
+        requests = Request.objects.filter(user=user, is_accepted=None)
+        print(user)
+
         return render(request, 'calendarapp/main.html', {
             'event_list': event_list,
         })
@@ -157,8 +160,9 @@ def signout(request):
 
 
 def requester_main(request):
+    user_id = 3
+    user = User.objects.get(pk=user_id)
     if request.method == 'POST':
-        user =# from URL maybe
         requester_name = request.POST['requester_name']
         requester_mail_address = request.POST['requester_mail_address']
         message = request.POST['message']

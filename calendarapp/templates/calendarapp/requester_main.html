@@ -87,6 +87,7 @@
     <section id="modal" class="hidden">
         <h3>リクエスト申請</h3>
         <form method="post">
+            {% csrf_token %}
             <label>名前</label>
             <input type="text" class="form-control" name="requester_name">
             <label>Email</label>
