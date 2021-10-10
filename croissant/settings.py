@@ -134,7 +134,7 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-LOGIN_URL = '/signin/'
+LOGIN_URL = '/calendar/signin'
 
 
 # for send mail

@@ -57,7 +57,7 @@ def signin(request):
     return render(request, 'calendarapp/signin.html')
 
 
-# @login_required
+@login_required
 def main(request):
     user = request.user
     if request.method == 'POST':
@@ -71,10 +71,10 @@ def main(request):
         # データベース更新（Request.message, Request.is_accepted）
 
         # メール送信
-        sender_name = user.username
-        mail_address = # リクエストのIDから取ってくる？
-        email(sender_name, message, mail_address, # is_accepted)
-        return redirect('main')
+        # sender_name = user.username
+        # mail_address = # リクエストのIDから取ってくる？
+        # email(sender_name, message, mail_address, is_accepted)
+        # return redirect('main')
         pass
     else:
         credentials_dict = json.loads(Calendar.objects.get(user=user).credentials)
@@ -100,9 +100,11 @@ def main(request):
         event_list = get_event_list(calendar_id_list, service, dt_now_iso, dt_90d_later_iso)
 
         # リクエスト一覧をデータベースからとって表示
-        # send requests to front
-        # クエリの形から変えないといけないかも
         requests = Request.objects.filter(user=user, is_accepted=None)
+        # 辞書のリストに変換
+        requests = list(requests.values())
+
+        print(user, type(user))
 
         # UPDATE database?
         # Save credentials back to session in case access token was refreshed.
@@ -110,6 +112,8 @@ def main(request):
 
         return render(request, 'calendarapp/main.html', {
             'event_list': event_list,
+            'requests': requests,
+            'user_id': user.id,  # URL共有用
         })
 
 
@@ -128,20 +132,22 @@ def signout(request):
 
 
 def requester_main(request):
-    # user(admin)をURLの情報から取り出す処理
+    user_id = 13 # need to get from URL-info
+    user = User.objects.get(pk=user_id)
+    print(user, type(user), user.id)
     if request.method == 'POST':
         # データベースへ保存
-        # requester_name = request.POST['requester_name']
-        # requester_mail_adress = request.POST['requester_mail_adress']
-        # message = request.POST['message']
-        # start_at = request.POST['start_at']
-        # end_at = request.POST['end_at']
-        # Request.objects.create(user=user, requester_name=requester_name,requester_mail_adress=requester_mail_adress, message=message, start_at=start_at, end_at=end_at)
+        requester_name = request.POST['requester_name']
+        requester_mail_address = request.POST['requester_mail_address']
+        message = request.POST['message']
+        start_at = request.POST['start_at']
+        end_at = request.POST['end_at']
+        Request.objects.create(user=user, requester_name=requester_name,requester_mail_address=requester_mail_address, message=message, start_at=start_at, end_at=end_at)
 
         # メール送信
-        # mail_address = user.email
-        # email(requester_name, message, mail_address)
-        # return redirect('requester_main')
+        mail_address = qpiufu8500@yahoo.com  # user.email
+        email(requester_name, message, mail_address)
+        return redirect('requester_main')
         pass
 
     else:
@@ -168,13 +174,14 @@ def requester_main(request):
         })
 
 
-def email(sender_name, message, mail_address):
-    # if admin or actor によってtitle, contentを変える(引数の数の(is_acceptedの有無)で判断できるかも):
-    #     title =
-    #     content =
-    # else:
-    #     title =
-    #     content =
+def email(sender_name, message, mail_address, *is_accepted):
+    # admin or actor によってtitle, contentを変える(is_acceptedの有無で条件分岐):
+    if is_accepted: # from admin to actor
+        title =
+        content =
+    else:           # from actor to admin
+        title = 'from actor to admin'
+        content = 'test'
     send_mail(
         title,
         content,
