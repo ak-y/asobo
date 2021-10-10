@@ -112,15 +112,21 @@ def main(request):
         # Save credentials back to session in case access token was refreshed.
         # request.session['credentials'] = credentials_to_dict(credentials)
 
-        # print(event_list)
-        # print(requests)
+        request_list = list()
+        for a_request in requests:
+            request_info = dict()
+            request_info['id'] = a_request['id']
+            request_info['title'] = a_request['requester_name']
+            request_info['message'] = a_request['message']
+            request_info['start'] = a_request['start_at'].isoformat()
+            request_info['end'] = a_request['end_at'].isoformat()
+            request_list.append(request_info)
 
         return render(request, 'calendarapp/main.html', {
             'event_list': event_list,
-            'requests': requests,
+            'request_list': request_list,
             'user_id': user.id,  # URL共有用
         })
-
 
 @login_required
 def request(request):
