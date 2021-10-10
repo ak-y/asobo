@@ -1,7 +1,9 @@
 from django.urls import path
 from . import views
 
+app_name = "calendarapp"
 urlpatterns = [
+    path('index', views.index, name='index'),
     path('register', views.register, name='register'),
     path('signin', views.signin, name='signin'),
     path('main', views.main, name='main'),
@@ -10,5 +12,4 @@ urlpatterns = [
     path('requester_main', views.requester_main, name='requester_main'),
     path('authorize', views.authorize, name='authorize'),
     path('oauth2callback', views.oauth2callback, name='oauth2callback'),
-    path('index', views.index, name='index'),
 ]
