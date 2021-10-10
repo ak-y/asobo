@@ -9,7 +9,7 @@
     <!-- CSS -->
     <link rel='stylesheet' type="text/css" href="{% static 'croissant/css/style.css' %}">
       <link rel='stylesheet' type="text/css" href="{% static 'croissant/css/base.css' %}">
-      <title>CALENDAR APP</title>
+      <title>asobo!</title>
 
 
     <!-- Bootstrap CSS -->
@@ -21,8 +21,9 @@
   </head>
   <body>
   <header>
-      <img src="{% static 'croissant/image/logo.png' %}" alt="ロゴサンプル">
+      <a href="{{'main'}}" ><img src="{% static 'croissant/image/logo.png' %}" alt="ロゴ"></a>
   </header>
+
 		{% block content %}
 		{% endblock content %}
 
