@@ -15,6 +15,11 @@
     document.addEventListener('DOMContentLoaded', function() {
 <!--views.pyからeventデータ取得-->
         var events = {{ event_list|safe }};
+        var user_id = {{ user_id|safe }};
+        var url = new String("http://127.0.0.1:8000/calendar/requester_main?user_id=" + user_id);
+        console.log(url);
+<!--        var request_list = {{ requests|safe }};-->
+
         var calendarEl = document.getElementById('calendar');
 <!--fullcalendarの詳細設定-->
         var calendar = new FullCalendar.Calendar(calendarEl, {
@@ -48,7 +53,7 @@
                     text: 'share',
                     click: function() {
                         Swal.fire({
-                            title: "http://127.0.0.1:8000/calendar/requester_main",
+                            title: url,
                             text: "友達にシェアしよう！",
                             icon: "success",
                             button: "閉じる",

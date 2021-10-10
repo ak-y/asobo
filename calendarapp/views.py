@@ -112,8 +112,8 @@ def main(request):
         # Save credentials back to session in case access token was refreshed.
         # request.session['credentials'] = credentials_to_dict(credentials)
 
-        requests = Request.objects.filter(user=user, is_accepted=None)
-        print(user)
+        # print(event_list)
+        # print(requests)
 
         return render(request, 'calendarapp/main.html', {
             'event_list': event_list,
