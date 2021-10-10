@@ -6,11 +6,15 @@
 <script src="{% static 'croissant/fullcalendar/main.js' %}"></script>
 <!-- ポップアップ表示のライブラリSweetAlert -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
-
+<!--FontAwesome-->
+<link href="https://use.fontawesome.com/releases/v5.0.8/css/all.css" rel="stylesheet">
+<!--css-->
+<link rel='stylesheet' type="text/css" href="{% static 'croissant/css/calendar.css' %}">
 <script>
 
     document.addEventListener('DOMContentLoaded', function() {
         var calendarEl = document.getElementById('calendar');
+        var events = {{ event_list|safe }};
 
         var calendar = new FullCalendar.Calendar(calendarEl, {
             locale: 'ja',
@@ -26,9 +30,9 @@
                 login: {
                     text: 'login your calendar',
                     click: function() {
+                        location.href = "http://127.0.0.1:8000/calendar/signin"
                         }
                 },
-
             },
             headerToolbar: {
                 left: 'prev,next today',
@@ -42,32 +46,58 @@
             selectMirror: true,
             dayMaxEvents: true, // allow "more" link when too many events
 
-            dateClick: function() {
-                Swal.fire({
-                  title: 'リクエスト承認',
-                  confirmButtonText: '次へ',
-                  html:
-                    '<input type="text">',
-                })
+            dateClick: function () {
+                modal.classList.remove('hidden');
+                mask.classList.remove('hidden');
             },
 
             eventSources: [{
-                events: [{
-                    title: 'a',
-                    start: '2021-10-15T12:00:00',
-                    end: '2021-10-15T15:00:00'
-                    }],
+                events: events,
                 color: 'gray',
-                textColor: 'gray'
+                textColor: 'black'
             }]
         });
 
         calendar.render();
+
+          const close = document.getElementById('close');
+          const modal = document.getElementById('modal');
+          const mask = document.getElementById('mask');
+
+          close.addEventListener('click', function () {
+            modal.classList.add('hidden');
+            mask.classList.add('hidden');
+          });
+          mask.addEventListener('click', function () {
+            modal.classList.add('hidden');
+            mask.classList.add('hidden');
+          });
     });
+
+
 
 </script>
 {% endblock header %}
 
 {% block content %}
+<!--カレンダー表示-->
 <div id="calendar"></div>
+<!--ポップアップ表示-->
+    <div id="mask" class="hidden"></div>
+    <section id="modal" class="hidden">
+        <h3>リクエスト申請</h3>
+        <form method="post">
+            <label>名前</label>
+            <input type="text" class="form-control" name="requester_name">
+            <label>Email</label>
+            <input type="email" class="form-control" id="exampleInputEmail1" name="requester_mail_address">
+            <label>開始</label>
+            <input type="datetime-local" class="form-control" name="start_at">
+            <label>終了</label>
+            <input type="datetime-local" class="form-control" name="end_at">
+            <label>メッセージ</label>
+            <textarea class="form-control" id="exampleFormControlTextarea1" name="message" rows="3"></textarea>
+            <button type=submit id="close">提出</button>
+        </form>
+    </section>
 {% endblock content %}
