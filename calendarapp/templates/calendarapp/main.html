@@ -7,7 +7,8 @@
 <script src="{% static 'croissant/fullcalendar/main.js' %}"></script>
 <!-- ポップアップ表示のライブラリSweetAlert -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
-
+<!--css-->
+<link rel='stylesheet' type="text/css" href="{% static 'croissant/css/calendar.css' %}">
 
 <!--fullcalendarの設定-->
 <script>
@@ -103,8 +104,9 @@
             selectMirror: true,
             dayMaxEvents: true, // allow "more" link when too many events
 <!--イベント情報入力-->
+
             eventSources: [{
-                events:events,
+                events: events,
                 color: 'gray',
                 textColor: 'black'
             }]

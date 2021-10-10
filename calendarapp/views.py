@@ -158,14 +158,14 @@ def signout(request):
 
 def requester_main(request):
     if request.method == 'POST':
-        # user = # from URL maybe
-        # requester_name = request.POST['requester_name']
-        # requester_mail_adress = request.POST['requester_mail_adress']
-        # message = request.POST['message']
-        # start_at = request.POST['start_at']
-        # end_at = request.POST['end_at']
+        user =# from URL maybe
+        requester_name = request.POST['requester_name']
+        requester_mail_address = request.POST['requester_mail_address']
+        message = request.POST['message']
+        start_at = request.POST['start_at']
+        end_at = request.POST['end_at']
 
-        # request = Request.objects.create(user=user, requester_name=requester_name,requester_mail_adress=requester_mail_adress, message=message, start_at=start_at, end_at=end_at)
+        request = Request.objects.create(user=user, requester_name=requester_name, requester_mail_address=requester_mail_address, message=message, start_at=start_at, end_at=end_at)
 
         pass
 
