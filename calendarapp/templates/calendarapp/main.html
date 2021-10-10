@@ -7,7 +7,8 @@
 <script src="{% static 'croissant/fullcalendar/main.js' %}"></script>
 <!-- ポップアップ表示のライブラリSweetAlert -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
-
+<!--css-->
+<link rel='stylesheet' type="text/css" href="{% static 'croissant/css/calendar.css' %}">
 
 <!--fullcalendarの設定-->
 <script>
@@ -25,7 +26,7 @@
             scrollTime: '08:00',// 開始時間の設定
             initialView: 'timeGridWeek',//　カレンダーの種類
             nowIndicator: false,//　現在時刻の目印表示
-            allDaySlot: false,// 終日イベント欄の表示
+            allDaySlot: true,// 終日イベント欄の表示
 <!--オリジナルボタンの作成-->
             customButtons: {
 <!--ログアウトボタン-->
@@ -77,6 +78,7 @@
                     if (!value) {
                         return '承認、未承認を選択してください。'
                     } else {
+                        console.log(value),
                         Swal.fire({
                             title: 'コメント記入',
                             input: 'textarea',
@@ -102,8 +104,9 @@
             selectMirror: true,
             dayMaxEvents: true, // allow "more" link when too many events
 <!--イベント情報入力-->
+
             eventSources: [{
-                events:events,
+                events: events,
                 color: 'gray',
                 textColor: 'black'
             }]
