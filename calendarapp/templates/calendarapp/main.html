@@ -2,62 +2,79 @@
 {% load static %}
 
 {% block header %}
-<link href="{% static 'croissant/fullcalendar/main.css' %}" rel='stylesheet' />
+<!--fullcalendar-->
+<link href="{% static 'croissant/fullcalendar/main.css' %}" rel='stylesheet'/>
 <script src="{% static 'croissant/fullcalendar/main.js' %}"></script>
 <!-- ポップアップ表示のライブラリSweetAlert -->
-<script src= "https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+<!--css-->
+<link rel='stylesheet' type="text/css" href="{% static 'croissant/css/calendar.css' %}">
 
+<!--fullcalendarの設定-->
 <script>
-    var events = {{ event_list|safe }};
-    console.log(events[2].summary)
-
     document.addEventListener('DOMContentLoaded', function() {
-        var calendarEl = document.getElementById('calendar');
+<!--views.pyからeventデータ取得-->
+        var events = {{ event_list|safe }};
+        var requests = {{ request_list|safe }};
+        var user_id = {{ user_id|safe }};
+        var url = new String("http://127.0.0.1:8000/calendar/requester_main?user_id=" + user_id);
+<!--        var request_list = {{ requests|safe }};-->
 
+        var calendarEl = document.getElementById('calendar');
+<!--fullcalendarの詳細設定-->
         var calendar = new FullCalendar.Calendar(calendarEl, {
-            locale: 'ja',
-            firstDay: (new Date()).getDay(),
+            locale: 'ja',// 日本語
+            firstDay: (new Date()).getDay(),// 開始日の設定
             validRange: {
                 start: new Date()
             },
-            scrollTime: '08:00',
-            initialView: 'timeGridWeek',
-            nowIndicator: false,
-            allDaySlot: false,
+            scrollTime: '08:00',// 開始時間の設定
+            initialView: 'timeGridWeek',//　カレンダーの種類
+            nowIndicator: false,//　現在時刻の目印表示
+            allDaySlot: true,// 終日イベント欄の表示
+<!--オリジナルボタンの作成-->
             customButtons: {
+<!--ログアウトボタン-->
                 logout: {
                     text: 'logout',
                     click: function() {
-                        alert('clicked the logout button!');
+                        location.href = "http://127.0.0.1:8000/calendar/signout"
                     }
                 },
+<!--リクエストボタン-->
                 request: {
                     text: 'request',
                     click: function() {
-                        alert('clicked the request button!');
+                        location.href = "http://127.0.0.1:8000/calendar/request"
                     }
                 },
+<!--シェアボタン-->
                 share: {
                     text: 'share',
                     click: function() {
-                        swal({
-                          title: "http://127.0.0.1:8000/calendar/requester_main",
-                          text: "友達にシェアしよう！",
-                          icon: "success",
-                          button: "閉じる",
+                        Swal.fire({
+                            title: url,
+                            text: "友達にシェアしよう！",
+                            icon: "success",
+                            button: "閉じる",
                         });
                     }
                 }
             },
+<!--ツールバーのボタン設定-->
             headerToolbar: {
                 left: 'prev,next today',
                 center: 'title',
-                right: 'share,request,logout'
+                right: 'share request logout'
             },
-            eventClick: function(info) {
-                alert('Evet: ' + info.event.title);
+<!--イベントクリック時のアクション-->
+            eventClick: function (info){
+                if (info.event.id) {
+                    document.getElementById('close').value=info.event.id;
+                    modal.classList.remove('hidden');
+                    mask.classList.remove('hidden');
+                }
             },
-
 
             navLinks: false, // can click day/week names to navigate views
             editable: false,
@@ -65,19 +82,70 @@
             selectMirror: true,
             dayMaxEvents: true, // allow "more" link when too many events
 
-            eventSources: [{
-                events:events,
-                color: 'gray',
-                textColor: 'black'
-            }]
+<!--イベント情報入力-->
+            eventSources: [
+<!--グーグルカレンダーの情報取得-->
+                {
+                    events: events,
+                    color: 'gray',
+                    textColor: 'black',
+                },
+                {
+                    events: requests,
+                    color: 'blue',
+                },
+            ],
         });
 
         calendar.render();
+
+<!--ポップアップ画面の処理-->
+      const close = document.getElementById('close');
+      const modal = document.getElementById('modal');
+      const mask = document.getElementById('mask');
+
+      close.addEventListener('click', function () {
+        modal.classList.add('hidden');
+        mask.classList.add('hidden');
+        Swal.fire({
+            title: "送信されました！",
+            icon: "success",
+            button: "閉じる",
+        });
+      });
+      mask.addEventListener('click', function () {
+        modal.classList.add('hidden');
+        mask.classList.add('hidden');
+      });
     });
+
 
 </script>
 {% endblock header %}
 
 {% block content %}
+<!--これだけでカレンダー表示-->
 <div id="calendar"></div>
+
+<!--ポップアップ表示-->
+<div id="mask" class="hidden"></div>
+<section id="modal" class="hidden">
+    <h3>リクエスト承認画面</h3>
+    <form method="post">
+        {% csrf_token %}
+        <div>
+              <div class="custom-control custom-radio">
+                <input type="radio" class="custom-control-input" id="custom-radio-1" name="is_accepted" value="Yes">
+                <label class="custom-control-label" for="custom-radio-1">承認</label>
+              </div>
+              <div class="custom-control custom-radio">
+                <input type="radio" class="custom-control-input" id="custom-radio-2" name="is_accepted" value="No">
+                <label class="custom-control-label" for="custom-radio-2">未承認</label>
+              </div>
+        </div>
+        <label>メッセージ</label>
+        <textarea class="form-control" id="exampleFormControlTextarea1" name="message" rows="3"></textarea>
+        <button type=submit id="close" name="id">送信</button>
+    </form>
+</section>
 {% endblock content %}

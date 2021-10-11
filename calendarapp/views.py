@@ -4,6 +4,7 @@ from .models import Request, Calendar
 from django.db import IntegrityError
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.core.mail import send_mail
 
 # for oauth
 import google.oauth2.credentials
@@ -28,11 +29,6 @@ import json
 # Create your views here.
 
 def index(request):
-    if request.method == "POST":
-        if 'register' in request.POST:
-            return render('register')
-        if 'signin' in request.POST:
-            return redirect('signin')
     return render(request, 'calendarapp/index.html')
 
 
@@ -65,12 +61,26 @@ def signin(request):
     return render(request, 'calendarapp/signin.html')
 
 
-# @login_required
+@login_required
 def main(request):
+    user = request.user
     if request.method == 'POST':
+        # フロントでの処理がどうなっているのかやまとさんに確認
+        # リクエストのIDをフロントから送ってもらう？
+        # is_accepted = request.POST['is_accepted'] みたいなので受け取る？
+        # message = request.POST['message']
+        # if 承認:
+            # カレンダーに予定追加
+
+        # データベース更新（Request.message, Request.is_accepted）
+
+        # メール送信
+        # sender_name = user.username
+        # mail_address = # リクエストのIDから取ってくる？
+        # email(sender_name, message, mail_address, is_accepted)
+        # return redirect('main')
         pass
     else:
-        user = request.user
         credentials_dict = json.loads(Calendar.objects.get(user=user).credentials)
         credentials = google.oauth2.credentials.Credentials(
             token = credentials_dict["token"],
@@ -93,54 +103,30 @@ def main(request):
         # calendar_id_listに追加したそれぞれのカレンダーからイベントを取得
         event_list = get_event_list(calendar_id_list, service, dt_now_iso, dt_90d_later_iso)
 
+        # リクエスト一覧をデータベースからとって表示
+        requests = Request.objects.filter(user=user, is_accepted=None)
+        # 辞書のリストに変換
+        requests = list(requests.values())
+
         # UPDATE database?
         # Save credentials back to session in case access token was refreshed.
         # request.session['credentials'] = credentials_to_dict(credentials)
 
+        request_list = list()
+        for a_request in requests:
+            request_info = dict()
+            request_info['id'] = a_request['id']
+            request_info['title'] = a_request['requester_name']
+            request_info['message'] = a_request['message']
+            request_info['start'] = a_request['start_at'].isoformat()
+            request_info['end'] = a_request['end_at'].isoformat()
+            request_list.append(request_info)
+
         return render(request, 'calendarapp/main.html', {
             'event_list': event_list,
+            'request_list': request_list,
+            'user_id': user.id,  # URL共有用
         })
-
-
-def authorize(request):
-    # Create flow instance to manage the OAuth 2.0 Authorization Grant Flow steps.
-    flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
-        CLIENT_SECRETS_FILE, scopes=SCOPES)
-
-    # url when authorization done
-    flow.redirect_uri = 'http://127.0.0.1:8000/calendar/oauth2callback'
-
-    # authorization-url
-    # Enable offline access so that you can refresh an access token without re-prompting the user for permission.
-    authorization_url, state = flow.authorization_url(access_type='offline')
-
-    # Store the state so the callback can verify the auth server response.
-    request.session['state'] = state
-
-    return redirect(authorization_url)
-
-
-def oauth2callback(request):
-    user = request.user
-    # Specify the state when creating the flow in the callback so that it can
-    # verified in the authorization server response.
-    state = request.session['state']
-
-    flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
-        CLIENT_SECRETS_FILE, scopes=SCOPES, state=state)
-    flow.redirect_uri = 'http://127.0.0.1:8000/calendar/oauth2callback'
-
-    # Use the authorization server's response to fetch the OAuth 2.0 tokens.
-    authorization_response = request.build_absolute_uri()
-    flow.fetch_token(authorization_response=authorization_response)
-
-    # Store credentials in the database.
-    credentials = flow.credentials
-    credentials = json.dumps(credentials_to_dict(credentials))
-    Calendar.objects.create(user=user, credentials=credentials)
-
-    return redirect('main')
-
 
 @login_required
 def request(request):
@@ -157,34 +143,63 @@ def signout(request):
 
 
 def requester_main(request):
+
+    user_id = 3 # need to get from URL-info
+    user = User.objects.get(pk=user_id)
     if request.method == 'POST':
-        # user = # from URL maybe
-        # requester_name = request.POST['requester_name']
-        # requester_mail_adress = request.POST['requester_mail_adress']
-        # message = request.POST['message']
-        # start_at = request.POST['start_at']
-        # end_at = request.POST['end_at']
+        # DBへ保存
+        requester_name = request.POST['requester_name']
+        requester_mail_address = request.POST['requester_mail_address']
+        message = request.POST['message']
+        start_at = request.POST['start_at']
+        end_at = request.POST['end_at']
+        Request.objects.create(user=user, requester_name=requester_name,requester_mail_address=requester_mail_address, message=message, start_at=start_at, end_at=end_at)
 
-        # request = Request.objects.create(user=user, requester_name=requester_name,requester_mail_adress=requester_mail_adress, message=message, start_at=start_at, end_at=end_at)
+        # メール送信
+        mail_address = 'croissant.calendar@gmail.com'  # user.email
+        email(requester_name, message, mail_address)
 
-        pass
+        return redirect('requester_main')
 
     else:
-        # adminのidなどをもとにデータベースからcredentialsを取ってくる処理
+        credentials_dict = json.loads(Calendar.objects.get(user=user).credentials)
+        credentials = google.oauth2.credentials.Credentials(
+            token = credentials_dict["token"],
+            refresh_token = credentials_dict["refresh_token"],
+            token_uri = credentials_dict["token_uri"],
+            client_id = credentials_dict["client_id"],
+            client_secret = credentials_dict["client_secret"],
+            scopes = credentials_dict["scopes"])
 
-        # service = googleapiclient.discovery.build(
-        #     API_SERVICE_NAME, API_VERSION, credentials=credentials)
+        service = googleapiclient.discovery.build(
+            API_SERVICE_NAME, API_VERSION, credentials=credentials)
 
-        # calendar_id_list = get_calendar_id_list(service)
+        calendar_id_list = get_calendar_id_list(service)
 
-        # dt_now_iso, dt_90d_later_iso = get_datetime()
+        dt_now_iso, dt_90d_later_iso = get_datetime()
 
-        # event_list = get_event_list(calendar_id_list, service, dt_now_iso, dt_90d_later_iso)
+        event_list = get_event_list(calendar_id_list, service, dt_now_iso, dt_90d_later_iso)
 
-        # return render(request, 'calendarapp/requester_main.html')
-        pass
+        return render(request, 'calendarapp/requester_main.html', {
+            'event_list': event_list,
+        })
 
 
+def email(sender_name, message, mail_address, *is_accepted):
+    # admin or actor によってtitle, contentを変える(is_acceptedの有無で条件分岐):
+    if is_accepted: # from admin to actor
+        title = 'from admin to actor'
+        content = 'test'
+    else:           # from actor to admin
+        title = 'from actor to admin'
+        content = 'test'
+    send_mail(
+        title,
+        content,
+        'croissant.calendar@gmial.com',
+        [mail_address],
+        fail_silently=False,
+    )
 
 
 def credentials_to_dict(credentials):
@@ -239,3 +254,43 @@ def get_event_list(calendar_id_list, service, dt_now_iso, dt_90d_later_iso):
                 break
 
     return event_list
+
+
+def authorize(request):
+    # Create flow instance to manage the OAuth 2.0 Authorization Grant Flow steps.
+    flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
+        CLIENT_SECRETS_FILE, scopes=SCOPES)
+
+    # url when authorization done
+    flow.redirect_uri = 'http://127.0.0.1:8000/calendar/oauth2callback'
+
+    # authorization-url
+    # Enable offline access so that you can refresh an access token without re-prompting the user for permission.
+    authorization_url, state = flow.authorization_url(access_type='offline')
+
+    # Store the state so the callback can verify the auth server response.
+    request.session['state'] = state
+
+    return redirect(authorization_url)
+
+
+def oauth2callback(request):
+    user = request.user
+    # Specify the state when creating the flow in the callback so that it can
+    # verified in the authorization server response.
+    state = request.session['state']
+
+    flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
+        CLIENT_SECRETS_FILE, scopes=SCOPES, state=state)
+    flow.redirect_uri = 'http://127.0.0.1:8000/calendar/oauth2callback'
+
+    # Use the authorization server's response to fetch the OAuth 2.0 tokens.
+    authorization_response = request.build_absolute_uri()
+    flow.fetch_token(authorization_response=authorization_response)
+
+    # Store credentials in the database.
+    credentials = flow.credentials
+    credentials = json.dumps(credentials_to_dict(credentials))
+    Calendar.objects.create(user=user, credentials=credentials)
+
+    return redirect('main')
