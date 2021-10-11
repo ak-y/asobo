@@ -26,8 +26,6 @@ import json
 
 
 
-# Create your views here.
-
 def index(request):
     return render(request, 'calendarapp/index.html')
 
@@ -65,20 +63,21 @@ def signin(request):
 def main(request):
     user = request.user
     if request.method == 'POST':
-        # フロントでの処理がどうなっているのかやまとさんに確認
-        # リクエストのIDをフロントから送ってもらう？
-        # is_accepted = request.POST['is_accepted'] みたいなので受け取る？
-        # message = request.POST['message']
-        # if 承認:
+        id = request.POST['id']
+        is_accepted = True if request.POST['is_accepted'] == 'Yes' else False
+        message = request.POST['message']
+
+        # if is_acceppted:
             # カレンダーに予定追加
 
-        # データベース更新（Request.message, Request.is_accepted）
+        # リクエストテーブル更新
+        Request.objects.filter(id=id).update(admin_message=message, is_accepted=is_accepted)
 
         # メール送信
-        # sender_name = user.username
-        # mail_address = # リクエストのIDから取ってくる？
-        # email(sender_name, message, mail_address, is_accepted)
-        # return redirect('main')
+        sender_name = user.username
+        mail_address = Request.objects.get(id=id).requester_mail_address
+        email(sender_name, message, mail_address, is_accepted)
+        return redirect('main')
         pass
     else:
         credentials_dict = json.loads(Calendar.objects.get(user=user).credentials)
@@ -97,36 +96,36 @@ def main(request):
         # カレンダーのリスト取得
         calendar_id_list = get_calendar_id_list(service)
 
-        # 現在日時と1年後の日時をISOフォーマットで取得
+        # 現在日時と90日後の日時をISOフォーマットで取得
         dt_now_iso, dt_90d_later_iso = get_datetime()
 
         # calendar_id_listに追加したそれぞれのカレンダーからイベントを取得
         event_list = get_event_list(calendar_id_list, service, dt_now_iso, dt_90d_later_iso)
 
-        # リクエスト一覧をデータベースからとって表示
+        # リクエスト一覧をデータベースから取得
         requests = Request.objects.filter(user=user, is_accepted=None)
-        # 辞書のリストに変換
-        requests = list(requests.values())
+
+        # requestsからフロントに送る情報をrequest_listに抽出、datetimeをISOに整形 (id, requester_name, message, start, end)
+        request_list = list()
+        for a_request in requests:
+            request_info = dict()
+            request_info['id'] = a_request.id
+            request_info['requester_name'] = a_request.requester_name
+            request_info['title'] = a_request.message
+            request_info['start'] = a_request.start_at.isoformat()[:19]
+            request_info['end'] = a_request.end_at.isoformat()[:19]
+            request_list.append(request_info)
 
         # UPDATE database?
         # Save credentials back to session in case access token was refreshed.
         # request.session['credentials'] = credentials_to_dict(credentials)
-
-        request_list = list()
-        for a_request in requests:
-            request_info = dict()
-            request_info['id'] = a_request['id']
-            request_info['title'] = a_request['requester_name']
-            request_info['message'] = a_request['message']
-            request_info['start'] = a_request['start_at'].isoformat()
-            request_info['end'] = a_request['end_at'].isoformat()
-            request_list.append(request_info)
 
         return render(request, 'calendarapp/main.html', {
             'event_list': event_list,
             'request_list': request_list,
             'user_id': user.id,  # URL共有用
         })
+
 
 @login_required
 def request(request):
@@ -142,9 +141,7 @@ def signout(request):
     return redirect('signin')
 
 
-def requester_main(request):
-
-    user_id = 3 # need to get from URL-info
+def requester_main(request, user_id):
     user = User.objects.get(pk=user_id)
     if request.method == 'POST':
         # DBへ保存
@@ -159,8 +156,7 @@ def requester_main(request):
         mail_address = 'croissant.calendar@gmail.com'  # user.email
         email(requester_name, message, mail_address)
 
-        return redirect('requester_main')
-
+        return redirect('requester_main', user_id=user.id)
     else:
         credentials_dict = json.loads(Calendar.objects.get(user=user).credentials)
         credentials = google.oauth2.credentials.Credentials(
@@ -188,11 +184,12 @@ def requester_main(request):
 def email(sender_name, message, mail_address, *is_accepted):
     # admin or actor によってtitle, contentを変える(is_acceptedの有無で条件分岐):
     if is_accepted: # from admin to actor
-        title = 'from admin to actor'
-        content = 'test'
+        result = '承認' if is_accepted[0] == True else '拒否'
+        title = sender_name + 'さんへのリクエストが' + result + 'されました'
+        content = sender_name + 'さんへのリクエストが' + result + 'されました。\n\n' + sender_name + 'さんからのメッセージ：' + message
     else:           # from actor to admin
-        title = 'from actor to admin'
-        content = 'test'
+        title = sender_name + 'さんからasobo!のリクエストが送られてきました'
+        content = sender_name + 'さんからリクエストが来ています。\n\n確認する：http://127.0.0.1:8000/calendar/signin'
     send_mail(
         title,
         content,
