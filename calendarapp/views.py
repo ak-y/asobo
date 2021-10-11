@@ -119,7 +119,7 @@ def main(request):
             request_info = dict()
             request_info['id'] = a_request['id']
             request_info['requester_name'] = a_request['requester_name']
-            request_info['message'] = a_request['message']
+            request_info['title'] = a_request['message']
             request_info['start'] = a_request['start_at'].isoformat()
             request_info['end'] = a_request['end_at'].isoformat()
             request_list.append(request_info)
@@ -129,7 +129,6 @@ def main(request):
             'request_list': request_list,
             'user_id': user.id,  # URL共有用
         })
-
 
 @login_required
 def request(request):

@@ -15,6 +15,11 @@
     document.addEventListener('DOMContentLoaded', function() {
 <!--views.pyからeventデータ取得-->
         var events = {{ event_list|safe }};
+        var requests = {{ request_list|safe }};
+        var user_id = {{ user_id|safe }};
+        var url = new String("http://127.0.0.1:8000/calendar/requester_main?user_id=" + user_id);
+<!--        var request_list = {{ requests|safe }};-->
+
         var calendarEl = document.getElementById('calendar');
 <!--fullcalendarの詳細設定-->
         var calendar = new FullCalendar.Calendar(calendarEl, {
@@ -48,7 +53,7 @@
                     text: 'share',
                     click: function() {
                         Swal.fire({
-                            title: "http://127.0.0.1:8000/calendar/requester_main",
+                            title: url,
                             text: "友達にシェアしよう！",
                             icon: "success",
                             button: "閉じる",
@@ -63,39 +68,12 @@
                 right: 'share request logout'
             },
 <!--イベントクリック時のアクション-->
-            eventClick: function(info) {
-               var inputOptions = {
-                      ok: '承認',
-                      no: '未承認',
-                };
-
-               Swal.fire({
-                  title: 'リクエスト承認',
-                  confirmButtonText: '次へ',
-                  input: 'radio',
-                  inputOptions: inputOptions,
-                  inputValidator: (value) => {
-                    if (!value) {
-                        return '承認、未承認を選択してください。'
-                    } else {
-                        console.log(value),
-                        Swal.fire({
-                            title: 'コメント記入',
-                            input: 'textarea',
-                            inputLabel: 'コメントを記入できます。',
-                            inputPlaceholder: '(例)じゃあ、○○に集合ね！/ごめん、その日は厳しいかも…',
-                            confirmButtonText: '送信',
-                            preConfirm: function() {
-                                Swal.fire({
-                                    title: "送信されました！",
-                                    icon: "success",
-                                    button: "閉じる",
-                                })
-                            }
-                        })
-                    }
-                  }
-               })
+            eventClick: function (info){
+                if (info.event.id) {
+                    document.getElementById('close').value=info.event.id;
+                    modal.classList.remove('hidden');
+                    mask.classList.remove('hidden');
+                }
             },
 
             navLinks: false, // can click day/week names to navigate views
@@ -103,16 +81,42 @@
             selectable: false,
             selectMirror: true,
             dayMaxEvents: true, // allow "more" link when too many events
-<!--イベント情報入力-->
 
-            eventSources: [{
-                events: events,
-                color: 'gray',
-                textColor: 'black'
-            }]
+<!--イベント情報入力-->
+            eventSources: [
+<!--グーグルカレンダーの情報取得-->
+                {
+                    events: events,
+                    color: 'gray',
+                    textColor: 'black',
+                },
+                {
+                    events: requests,
+                    color: 'blue',
+                },
+            ],
         });
 
         calendar.render();
+
+<!--ポップアップ画面の処理-->
+      const close = document.getElementById('close');
+      const modal = document.getElementById('modal');
+      const mask = document.getElementById('mask');
+
+      close.addEventListener('click', function () {
+        modal.classList.add('hidden');
+        mask.classList.add('hidden');
+        Swal.fire({
+            title: "送信されました！",
+            icon: "success",
+            button: "閉じる",
+        });
+      });
+      mask.addEventListener('click', function () {
+        modal.classList.add('hidden');
+        mask.classList.add('hidden');
+      });
     });
 
 
@@ -122,4 +126,26 @@
 {% block content %}
 <!--これだけでカレンダー表示-->
 <div id="calendar"></div>
+
+<!--ポップアップ表示-->
+<div id="mask" class="hidden"></div>
+<section id="modal" class="hidden">
+    <h3>リクエスト承認画面</h3>
+    <form method="post">
+        {% csrf_token %}
+        <div>
+              <div class="custom-control custom-radio">
+                <input type="radio" class="custom-control-input" id="custom-radio-1" name="is_accepted" value="Yes">
+                <label class="custom-control-label" for="custom-radio-1">承認</label>
+              </div>
+              <div class="custom-control custom-radio">
+                <input type="radio" class="custom-control-input" id="custom-radio-2" name="is_accepted" value="No">
+                <label class="custom-control-label" for="custom-radio-2">未承認</label>
+              </div>
+        </div>
+        <label>メッセージ</label>
+        <textarea class="form-control" id="exampleFormControlTextarea1" name="message" rows="3"></textarea>
+        <button type=submit id="close" name="id">送信</button>
+    </form>
+</section>
 {% endblock content %}
