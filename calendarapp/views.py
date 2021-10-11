@@ -23,6 +23,7 @@ os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 
 import datetime
 import json
+import urllib.parse
 
 
 
@@ -65,20 +66,20 @@ def signin(request):
 def main(request):
     user = request.user
     if request.method == 'POST':
-        # フロントでの処理がどうなっているのかやまとさんに確認
-        # リクエストのIDをフロントから送ってもらう？
-        # is_accepted = request.POST['is_accepted'] みたいなので受け取る？
-        # message = request.POST['message']
-        # if 承認:
+        id = requesst.POST['id']
+        is_accepted = True if request.POST['is_accepted'] == 'Yes' else False
+        message = request.POST['message']
+        # if is_acceppted:
             # カレンダーに予定追加
 
-        # データベース更新（Request.message, Request.is_accepted）
+        # データベース更新（Request.admin_message, Request.is_accepted）
+        Request.objects.filter(id=id).update(admin_message=message, is_accepted=is_accepted)
 
         # メール送信
-        # sender_name = user.username
-        # mail_address = # リクエストのIDから取ってくる？
-        # email(sender_name, message, mail_address, is_accepted)
-        # return redirect('main')
+        sender_name = user.username
+        mail_address = croissant.calendar@gmail.com  # Request.objects.get.(id=id).requester_mail_address
+        email(sender_name, message, mail_address, is_accepted)
+        return redirect('main')
         pass
     else:
         credentials_dict = json.loads(Calendar.objects.get(user=user).credentials)
@@ -112,9 +113,20 @@ def main(request):
         # Save credentials back to session in case access token was refreshed.
         # request.session['credentials'] = credentials_to_dict(credentials)
 
+        # id, requester_name, message, start, end,
+        request_list = list()
+        for a_request in requests:
+            request_info = dict()
+            request_info['id'] = a_request['id']
+            request_info['requester_name'] = a_request['requester_name']
+            request_info['message'] = a_request['message']
+            request_info['start'] = a_request['start_at'].isoformat()
+            request_info['end'] = a_request['end_at'].isoformat()
+            request_list.append(request_info)
+
         return render(request, 'calendarapp/main.html', {
             'event_list': event_list,
-            'requests': requests,
+            'request_list': request_list,
             'user_id': user.id,  # URL共有用
         })
 
@@ -134,7 +146,7 @@ def signout(request):
 
 
 def requester_main(request):
-    user_id = 13 # need to get from URL-info
+    user_id = int(urllib.parse.urlparse(url).query)
     user = User.objects.get(pk=user_id)
     if request.method == 'POST':
         # DBへ保存
@@ -178,11 +190,12 @@ def requester_main(request):
 def email(sender_name, message, mail_address, *is_accepted):
     # admin or actor によってtitle, contentを変える(is_acceptedの有無で条件分岐):
     if is_accepted: # from admin to actor
-        title = 'from admin to actor'
-        content = 'test'
+        result = '承認' if is_accepted == True else '拒否'
+        title = sender_name + 'さんへのリクエストが' + result + 'されました'
+        content = sender_name + 'さんへのリクエストが' + result + 'されました。\n' + sender_name + 'さんからのメッセージ：\n' + message
     else:           # from actor to admin
-        title = 'from actor to admin'
-        content = 'test'
+        title = sender_name + 'さんからasobo!のリクエストが送られてきました'
+        content = sender_name + 'さんからリクエストが来ています。/n'
     send_mail(
         title,
         content,
