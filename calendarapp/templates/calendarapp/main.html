@@ -17,7 +17,7 @@
         var events = {{ event_list|safe }};
         var requests = {{ request_list|safe }};
         var user_id = {{ user_id|safe }};
-        var url = new String("http://127.0.0.1:8000/calendar/requester_main?user_id=" + user_id);
+        var url = new String("http://127.0.0.1:8000/calendar/requester_main/" + user_id);
 <!--        var request_list = {{ requests|safe }};-->
 
         var calendarEl = document.getElementById('calendar');
