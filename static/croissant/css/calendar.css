@@ -1,9 +1,15 @@
-#calendar {
-    margin: auto;
-}
-
 #datetime {
     width: 40%;
+}
+
+.no-data {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 80px;
+  background: #d0d0d04d;
+  border: 1px solid #ddd;
 }
 
 body {
@@ -11,6 +17,12 @@ body {
   height: 1300px;
 }
 
+// fullcalendarのCSS
+.fc-widget-header{
+    background-color:blue;
+}
+
+// ポップアップ表示のCSS
 #open,
 #close {
   cursor: pointer;

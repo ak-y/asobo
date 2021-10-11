@@ -13,21 +13,52 @@
 <script>
 
     document.addEventListener('DOMContentLoaded', function() {
-        var calendarEl = document.getElementById('calendar');
 <!--views.pyからeventデータ取得-->
         var events = {{ event_list|safe }};
+
+        var calendarEl = document.getElementById('calendar');
+
 <!--fullcalendarの詳細設定-->
         var calendar = new FullCalendar.Calendar(calendarEl, {
+<!--週表示カレンダーの詳細設定-->
+          views: {
+              timeGridWeek: {
+<!--タイトルのフォーマット-->
+                titleFormat: function (date) {
+                  const startMonth = date.start.month + 1;
+                  const endMonth = date.end.month + 1;
+
+                  if (startMonth === endMonth) {
+                     return startMonth + '月';
+                  } else {
+                     return startMonth + '月～' + endMonth + '月';
+                  }
+                },
+<!--日付のフォーマット-->
+                dayHeaderFormat: function (date) {
+                  const day = date.date.day;
+                  const weekNum = date.date.marker.getDay();
+                  const week = ['(日)', '(月)', '(火)', '(水)', '(木)', '(金)', '(土)'][weekNum];
+
+                  return day + ' ' + week;
+                },
+              },
+          },
             locale: 'ja',// 日本語
-            timeZone: 'local',// タイムゾーン
             firstDay: (new Date()).getDay(),// 開始日の設定
             validRange: {
                 start: new Date()
             },
+<!--            themeSystem: 'bootstrap',// テーマの設定-->
             scrollTime: '08:00',// 開始時間の設定
             initialView: 'timeGridWeek',// カレンダーの種類
             nowIndicator: false,// 現在時刻の目印表示
             allDaySlot: true,// 終日イベント欄の表示
+            expandRows: true,// pcなどで表示する縦幅を変えるとそれに対応して時間幅も合わせてくれる設定
+<!--            stickyHeaderDates: true,// スクロールした際に日付が一番上に残ってくれる設定-->
+            slotDuration: '00:30:00',// 時間区切りの設定
+            slotLabelInterval: '01:00',// 時間テキストの表示間隔
+            contentHeight: '800px',// 要設定
 <!--オリジナルボタンの作成-->
             customButtons: {
 <!--ログイン画面へのボタン-->
@@ -45,12 +76,6 @@
                 right: 'login'
             },
 
-            navLinks: false, // can click day/week names to navigate views
-            editable: false,
-            selectable: false,
-            selectMirror: true,
-            dayMaxEvents: true, // allow "more" link when too many events
-
 <!--カレンダークリック時のアクション-->
             dateClick: function (arg) {
                 var start_datetime = new String(arg.date.getFullYear() + "-" + arg.date.getMonth() + "-" + arg.date.getDate() + "T" + arg.date.getHours() + ":" + arg.date.getMinutes());
@@ -59,6 +84,13 @@
                 modal.classList.remove('hidden');
                 mask.classList.remove('hidden');
             },
+
+            navLinks: false, // can click day/week names to navigate views
+            editable: false,
+            selectable: false,
+            selectMirror: true,
+            dayMaxEvents: true, // allow "more" link when too many events
+
 <!--イベント情報入力-->
             eventSources: [
 <!--グーグルカレンダーの情報取得-->
@@ -66,7 +98,7 @@
                     events: events,
                     color: 'gray',
                     textColor: 'black'
-                }
+                },
             ]
         });
 
@@ -101,6 +133,7 @@
 {% block content %}
 <!--カレンダー表示-->
 <div id="calendar"></div>
+
 <!--ポップアップ表示-->
 <div id="mask" class="hidden"></div>
 <section id="modal" class="hidden">
@@ -113,7 +146,6 @@
         <input type="email" class="form-control" id="exampleInputEmail1" name="requester_mail_address">
         <label>開始</label>
         <input type="datetime-local" class="form-control" id="start_at" name="start_at" value="2021-09-13T06:30">
-">
         <label>終了</label>
         <input type="datetime-local" class="form-control" name="end_at">
         <label>メッセージ</label>
