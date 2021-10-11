@@ -68,9 +68,12 @@
                 right: 'share request logout'
             },
 <!--イベントクリック時のアクション-->
-            eventClick: function (){
-                modal.classList.remove('hidden');
-                mask.classList.remove('hidden');
+            eventClick: function (info){
+                if (info.event.id) {
+                    document.getElementById('close').value=info.event.id;
+                    modal.classList.remove('hidden');
+                    mask.classList.remove('hidden');
+                }
             },
 
             navLinks: false, // can click day/week names to navigate views
@@ -142,7 +145,7 @@
         </div>
         <label>メッセージ</label>
         <textarea class="form-control" id="exampleFormControlTextarea1" name="message" rows="3"></textarea>
-        <button type=submit id="close">送信</button>
+        <button type=submit id="close" name="id">送信</button>
     </form>
 </section>
 {% endblock content %}
