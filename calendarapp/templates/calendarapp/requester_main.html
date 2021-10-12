@@ -83,12 +83,7 @@
                 right: 'login'
             },
 
-<!--カレンダークリック時のアクション-->
-<!--            dateClick: function (arg) {-->
-<!--                document.getElementById('start_at').value=arg.dateStr.substr(0,19);-->
-<!--                modal.classList.remove('hidden');-->
-<!--                mask.classList.remove('hidden');-->
-<!--            },-->
+<!--カレンダー選択時のアクション-->
             select: function (arg) {
                 document.getElementById('start_at').value=arg.startStr.substr(0,19);
                 document.getElementById('end_at').value=arg.endStr.substr(0,19);
@@ -123,7 +118,7 @@
       const modal = document.getElementById('modal');
       const mask = document.getElementById('mask');
 
-<!--送信ボタンが押された-->
+<!--modalの外が押された-->
       mask.addEventListener('click', function () {
         modal.classList.add('hidden');
         mask.classList.add('hidden');
@@ -174,8 +169,7 @@
 <section id="modal" class="hidden">
     <form method="post"class="row g-1 needs-validation" name="request" novalidate>
         {% csrf_token %}
-        <h3 class="modal">リクエスト申請</h3>
-
+        <h3 class="text-center">リクエスト申請</h3>
         <label class="form-label" for="name">名前</label>
         <input type="text" class="form-control" id="name" name="requester_name" required>
         <label class="form-label" for="exampleInputEmail" >Email</label>
@@ -188,7 +182,7 @@
         <input type="datetime-local" class="form-control" id="end_at" name="end_at" required>
         <label class="form-label" for="exampleFormControlTextarea">メッセージ(任意)</label>
         <textarea class="form-control" id="exampleFormControlTextarea" name="message" rows="3" placeholder="この日に○○行きたいな！"></textarea>
-        <button type=submit class="btn btn-primary" id="submit">提出</button>
+        <button type=submit class="btn btn-primary" id="submit">申請</button>
     </form>
 </section>
 {% endblock content %}
