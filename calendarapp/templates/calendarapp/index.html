@@ -7,17 +7,15 @@
 {% endblock header %}
 
 {% block content %}
-    {% csrf_token %}
     <div class=”center”>
         <p>
-            <a href="{{'register'}}" class="btn-square-pop">アカウント登録</a>
+            <a href="{% url 'register' %}" class="btn-square-pop">アカウント登録</a>
         </p>
     </div>
     <p class="p1"></p>
     <div class=”center”>
         <p>
-            <a href="{{'signin'}}" class="btn-square-pop">ログイン</a>
+            <a href="{% url 'signin' %}" class="btn-square-pop">ログイン</a>
         </p>
     </div>
-
 {% endblock content %}

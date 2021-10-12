@@ -2,35 +2,43 @@
 {% load static %}
 
 {% block header %}
-<link href="{% static 'croissant/fullcalendar/main.css' %}" rel='stylesheet' />
+<link href="{% static 'croissant/fullcalendar/main.css' %}" rel='stylesheet'/>
 <script src="{% static 'croissant/fullcalendar/main.js' %}"></script>
 <!-- ポップアップ表示のライブラリSweetAlert -->
-<script src= "https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
-
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+<!--FontAwesome-->
+<link href="https://use.fontawesome.com/releases/v5.0.8/css/all.css" rel="stylesheet">
+<!--css-->
+<link rel='stylesheet' type="text/css" href="{% static 'croissant/css/calendar.css' %}">
 <script>
 
     document.addEventListener('DOMContentLoaded', function() {
         var calendarEl = document.getElementById('calendar');
-
+<!--views.pyからeventデータ取得-->
+        var events = {{ event_list|safe }};
+<!--fullcalendarの詳細設定-->
         var calendar = new FullCalendar.Calendar(calendarEl, {
-            locale: 'ja',
-            firstDay: (new Date()).getDay(),
+            locale: 'ja',// 日本語
+            timeZone: 'local',// タイムゾーン
+            firstDay: (new Date()).getDay(),// 開始日の設定
             validRange: {
                 start: new Date()
             },
-            scrollTime: '08:00',
-            initialView: 'timeGridWeek',
-            nowIndicator: false,
-            allDaySlot: false,
+            scrollTime: '08:00',// 開始時間の設定
+            initialView: 'timeGridWeek',// カレンダーの種類
+            nowIndicator: false,// 現在時刻の目印表示
+            allDaySlot: true,// 終日イベント欄の表示
+<!--オリジナルボタンの作成-->
             customButtons: {
+<!--ログイン画面へのボタン-->
                 login: {
                     text: 'login your calendar',
                     click: function() {
-                        alert('clicked the login button!');
-                    }
+                        location.href = "http://127.0.0.1:8000/calendar/signin"
+                        }
                 },
-
             },
+<!--ツールバーのボタン設定-->
             headerToolbar: {
                 left: 'prev,next today',
                 center: 'title',
@@ -43,23 +51,73 @@
             selectMirror: true,
             dayMaxEvents: true, // allow "more" link when too many events
 
-            eventSources: [{
-                events: [{
-                    title: 'a',
-                    start: '2021-10-15T12:00:00',
-                    end: '2021-10-15T15:00:00'
-                    }],
-                color: 'gray',
-                textColor: 'gray'
-            }]
+<!--カレンダークリック時のアクション-->
+            dateClick: function (arg) {
+                var start_datetime = new String(arg.date.getFullYear() + "-" + arg.date.getMonth() + "-" + arg.date.getDate() + "T" + arg.date.getHours() + ":" + arg.date.getMinutes());
+                console.log(start_datetime);
+                document.getElementById('start_at').value=start_datetime;
+                modal.classList.remove('hidden');
+                mask.classList.remove('hidden');
+            },
+<!--イベント情報入力-->
+            eventSources: [
+<!--グーグルカレンダーの情報取得-->
+                {
+                    events: events,
+                    color: 'gray',
+                    textColor: 'black'
+                }
+            ]
         });
 
         calendar.render();
+
+<!--ポップアップ画面の処理-->
+      const close = document.getElementById('close');
+      const modal = document.getElementById('modal');
+      const mask = document.getElementById('mask');
+
+      close.addEventListener('click', function () {
+        modal.classList.add('hidden');
+        mask.classList.add('hidden');
+        Swal.fire({
+            title: "送信されました！",
+            icon: "success",
+            button: "閉じる",
+        });
+      });
+      mask.addEventListener('click', function () {
+        modal.classList.add('hidden');
+        mask.classList.add('hidden');
+      });
     });
+
+
+
 
 </script>
 {% endblock header %}
 
 {% block content %}
+<!--カレンダー表示-->
 <div id="calendar"></div>
+<!--ポップアップ表示-->
+<div id="mask" class="hidden"></div>
+<section id="modal" class="hidden">
+    <h3>リクエスト申請</h3>
+    <form method="post">
+        {% csrf_token %}
+        <label>名前</label>
+        <input type="text" class="form-control" name="requester_name">
+        <label>Email</label>
+        <input type="email" class="form-control" id="exampleInputEmail1" name="requester_mail_address">
+        <label>開始</label>
+        <input type="datetime-local" class="form-control" id="start_at" name="start_at" value="2021-09-13T06:30">
+        <label>終了</label>
+        <input type="datetime-local" class="form-control" name="end_at">
+        <label>メッセージ</label>
+        <textarea class="form-control" id="exampleFormControlTextarea1" name="message" rows="3"></textarea>
+        <button type=submit id="close">提出</button>
+    </form>
+</section>
 {% endblock content %}
