@@ -21,7 +21,7 @@
 <!--views.pyからactorのeventデータ取得-->
         var events = {{ event_list|safe }};
 <!--requesterのeventデータ取得-->
-        var requester_events;
+        var requester_events = {{requester_event_list|safe }};
 
         var calendarEl = document.getElementById('calendar');
 
@@ -70,7 +70,7 @@
             customButtons: {
 <!--ログイン画面へのボタン-->
                 login: {
-                    text: 'login your calendar',
+                    text: 'ログイン',
                     click: function() {
                         location.href = "http://127.0.0.1:8000/calendar/signin"
                         }
