@@ -2,83 +2,232 @@
 {% load static %}
 
 {% block header %}
+<!--css-->
+<link rel='stylesheet' type="text/css" href="{% static 'croissant/css/calendar.css' %}">
+<!--ロゴ-->
 <img src="{% static 'croissant/image/logo.png' %}" alt="ロゴ">
-<link href="{% static 'croissant/fullcalendar/main.css' %}" rel='stylesheet' />
+<!--fullcalendar-->
+<link href="{% static 'croissant/fullcalendar/main.css' %}" rel='stylesheet'/>
 <script src="{% static 'croissant/fullcalendar/main.js' %}"></script>
+<!--fullcalendarで使用するbootstrap-->
+<link href='https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.css' rel='stylesheet' />
+<link href='https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.1/css/all.css' rel='stylesheet'>
 <!-- ポップアップ表示のライブラリSweetAlert -->
-<script src= "https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+<!--FontAwesome-->
+<link href="https://use.fontawesome.com/releases/v5.0.8/css/all.css" rel="stylesheet">
 
 <script>
-    var events = {{ event_list|safe }};
-    console.log(events[2].summary)
-
     document.addEventListener('DOMContentLoaded', function() {
+<!--views.pyからeventデータ取得-->
+        var events = {{ event_list|safe }};
+        var requests = {{ request_list|safe }};
+        var user_id = {{ user_id|safe }};
+
+<!--URLの作成-->
+        var url = new String("http://127.0.0.1:8000/calendar/requester_main/" + user_id);
+
         var calendarEl = document.getElementById('calendar');
 
+<!--fullcalendarの詳細設定-->
         var calendar = new FullCalendar.Calendar(calendarEl, {
-            locale: 'ja',
-            firstDay: (new Date()).getDay(),
+<!--週表示カレンダーの詳細設定-->
+          views: {
+              timeGrid: {
+<!--タイトルのフォーマット-->
+                titleFormat: function (date) {
+                  const startMonth = date.start.month + 1;
+                  const endMonth = date.end.month + 1;
+                  if (startMonth === endMonth) {
+                     return startMonth + '月';
+                  } else {
+                     return startMonth + '月～' + endMonth + '月';
+                  }
+                },
+<!--日付のフォーマット-->
+                dayHeaderFormat: function (date) {
+                  const day = date.date.day;
+                  const weekNum = date.date.marker.getDay();
+                  const week = ['(日)', '(月)', '(火)', '(水)', '(木)', '(金)', '(土)'][weekNum];
+
+                  return day + ' ' + week;
+                },
+              },
+          },
+
+            locale: 'ja',// 日本語
+            firstDay: (new Date()).getDay(),// 開始日の設定
             validRange: {
                 start: new Date()
             },
-            scrollTime: '08:00',
-            initialView: 'timeGridWeek',
-            nowIndicator: false,
-            allDaySlot: false,
+            themeSystem: 'bootstrap',// テーマの設定
+            scrollTime: '08:00',// 開始時間の設定
+            timeZone: 'local',// タイムゾーン
+            initialView: 'timeGridWeek',//　カレンダーの種類
+            nowIndicator: false,//　現在時刻の目印表示
+            allDaySlot: true,// 終日イベント欄の表示
+            expandRows: true,// pcなどで表示する縦幅を変えるとそれに対応して時間幅も合わせてくれる設定
+            stickyHeaderDates: false,// スクロールした際に日付が一番上に残ってくれる設定
+            slotDuration: '00:30:00',// 時間区切りの設定
+            slotLabelInterval: '01:00',// 時間テキストの表示間隔
+            selectable: false,// ドラッグで選択可能
+            contentHeight: '800px',// 要設定
+<!--オリジナルボタンの作成-->
             customButtons: {
+<!--ログアウトボタン-->
                 logout: {
-                    text: 'logout',
+                    text: 'ログアウト',
+                    backgroundColor: 'red',
                     click: function() {
-                        alert('clicked the logout button!');
+                        location.href = "http://127.0.0.1:8000/calendar/signout"
                     }
                 },
+<!--リクエストボタン-->
                 request: {
-                    text: 'request',
+                    text: '一覧',
                     click: function() {
-                        alert('clicked the request button!');
+                        location.href = "http://127.0.0.1:8000/calendar/request"
                     }
                 },
+<!--シェアボタン-->
                 share: {
-                    text: 'share',
+                    text: '共有',
                     click: function() {
-                        swal({
-                          title: "http://127.0.0.1:8000/calendar/requester_main",
-                          text: "友達にシェアしよう！",
-                          icon: "success",
-                          button: "閉じる",
+                        navigator.clipboard.writeText(url);
+                        Swal.fire({
+                            title: url,
+                            html: '<p>クリップボードにコピーされました</p>' +
+                                  '<h5>友達に共有して予定を立てよう！</h5>',
+                            icon: "success",
+                            button: "閉じる",
                         });
                     }
                 }
             },
+<!--ツールバーのボタン設定-->
             headerToolbar: {
-                left: 'prev,next today',
+                left: 'prev,next today timeGridWeek,timeGridDay',
                 center: 'title',
-                right: 'share,request,logout'
+                right: 'share request logout'
             },
-            eventClick: function(info) {
-                alert('Evet: ' + info.event.title);
+<!--ボタンの名前設定-->
+            buttonText: {
+                today: '今日',
+                day: '日',
+                week: '週',
+            },
+<!--イベントクリック時のアクション-->
+            eventClick: function (info){
+                console.log(info.event.id);
+                if (info.event.id) {
+                    document.getElementById('submit').value=info.event.id;
+                    modal.classList.remove('hidden');
+                    mask.classList.remove('hidden');
+                }
             },
 
-
-            navLinks: false, // can click day/week names to navigate views
+            navLinks: true, // can click day/week names to navigate views
+<!--            navLinkDayClick: function(date, jsEvent) {-->
+<!--              console.log('day', date.toISOString());-->
+<!--              console.log('coords', jsEvent.pageX, jsEvent.pageY);-->
+<!--            },-->
             editable: false,
-            selectable: false,
             selectMirror: true,
             dayMaxEvents: true, // allow "more" link when too many events
 
-            eventSources: [{
-                events:events,
-                color: 'gray',
-                textColor: 'black'
-            }]
+<!--イベント情報入力-->
+            eventSources: [
+<!--グーグルカレンダーの情報取得-->
+                {
+                    events: events,
+                    color: '#f6ad49',
+                    textColor: '#ffffff',
+                },
+                {
+                    events: requests,
+                    color: 'blue',
+                    textColor: '#ffffff',
+                },
+            ],
         });
 
         calendar.render();
+
+<!--ポップアップ画面の処理-->
+      const modal = document.getElementById('modal');
+      const mask = document.getElementById('mask');
+
+<!--modalの外が押された-->
+      mask.addEventListener('click', function () {
+        modal.classList.add('hidden');
+        mask.classList.add('hidden');
+        document.request.reset();
+      });
+
+<!--入力情報に漏れがないか-->
+      (function () {
+          'use strict'
+
+          // Fetch all the forms we want to apply custom Bootstrap validation styles to
+          var forms = document.querySelectorAll('.needs-validation')
+
+          // Loop over them and prevent submission
+          Array.prototype.slice.call(forms)
+            .forEach(function (form) {
+              form.addEventListener('submit', function (event) {
+                if (!form.checkValidity()) {
+                  event.preventDefault()
+                  event.stopPropagation()
+                }else{
+                    modal.classList.add('hidden');
+                    mask.classList.add('hidden');
+                    Swal.fire({
+                        title: "送信されました！",
+                        icon: "success",
+                        button: "閉じる",
+                    });
+                };
+
+                form.classList.add('was-validated')
+              }, false)
+            })
+      })()
+
+
     });
+
+
+
 
 </script>
 {% endblock header %}
 
 {% block content %}
+<!--カレンダー表示-->
 <div id="calendar"></div>
+
+<!--ポップアップ表示-->
+<div id="mask" class="hidden"></div>
+<section id="modal" class="hidden">
+    <form method="post" class="row g-3 needs-validation" name="request" novalidate>
+        {% csrf_token %}
+        <h3 class="text-center">リクエスト承認</h3>
+        <div class="text-center">
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" id="inlineRadio1" name="is_accepted" value="Yes" required>
+              <label class="form-check-label" for="inlineRadio1">承認</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" id="inlineRadio2" name="is_accepted" value="No" required>
+              <label class="form-check-label" for="inlineRadio2">未承認</label>
+            </div>
+            <div class="invalid-feedback">
+                承認か未承認を選んでください。
+            </div>
+        </div>
+        <label for="exampleFormControlTextarea1" class="form-label">メッセージ(任意)</label>
+        <textarea class="form-control" id="exampleFormControlTextarea1" name="message" rows="3" placeholder="OK！じゃあ○○集合ね！/ごめん！その日は厳しい…"></textarea>
+        <button type=submit id="submit" class="btn btn-primary" name="id">送信</button>
+    </form>
+</section>
 {% endblock content %}
