@@ -10,7 +10,7 @@
 <link href="{% static 'croissant/fullcalendar/main.css' %}" rel='stylesheet'/>
 <script src="{% static 'croissant/fullcalendar/main.js' %}"></script>
 <!--fullcalendarで使用するbootstrap-->
-<link href='https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.css' rel='stylesheet' />
+<link href='https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.css' rel='stylesheet'/>
 <link href='https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.1/css/all.css' rel='stylesheet'>
 <!-- ポップアップ表示のライブラリSweetAlert -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
@@ -31,9 +31,32 @@
 
 <!--fullcalendarの詳細設定-->
         var calendar = new FullCalendar.Calendar(calendarEl, {
-<!--週表示カレンダーの詳細設定-->
+<!--カレンダー表示の詳細設定-->
           views: {
-              timeGrid: {
+<!--表示-->
+              timeGridWeek: {
+                eventContent: '　',// イベント内容を消す
+<!--タイトルのフォーマット-->
+                titleFormat: function (date) {
+                  const startMonth = date.start.month + 1;
+                  const endMonth = date.end.month + 1;
+                  if (startMonth === endMonth) {
+                     return startMonth + '月';
+                  } else {
+                     return startMonth + '月～' + endMonth + '月';
+                  }
+                },
+<!--日付のフォーマット-->
+                dayHeaderFormat: function (date) {
+                  const day = date.date.day;
+                  const weekNum = date.date.marker.getDay();
+                  const week = ['(日)', '(月)', '(火)', '(水)', '(木)', '(金)', '(土)'][weekNum];
+
+                  return day + ' ' + week;
+                },
+              },
+<!--日表示-->
+              timeGridDay: {
 <!--タイトルのフォーマット-->
                 titleFormat: function (date) {
                   const startMonth = date.start.month + 1;
@@ -199,6 +222,7 @@
 
 
 
+
 </script>
 {% endblock header %}
 
@@ -214,19 +238,20 @@
         <h3 class="text-center">リクエスト承認</h3>
         <div class="text-center">
             <div class="form-check form-check-inline">
-              <input class="form-check-input" type="radio" id="inlineRadio1" name="is_accepted" value="Yes" required>
-              <label class="form-check-label" for="inlineRadio1">承認</label>
+                <input class="form-check-input" type="radio" id="inlineRadio1" name="is_accepted" value="Yes" required>
+                <label class="form-check-label" for="inlineRadio1">承認</label>
             </div>
             <div class="form-check form-check-inline">
-              <input class="form-check-input" type="radio" id="inlineRadio2" name="is_accepted" value="No" required>
-              <label class="form-check-label" for="inlineRadio2">未承認</label>
+                <input class="form-check-input" type="radio" id="inlineRadio2" name="is_accepted" value="No" required>
+                <label class="form-check-label" for="inlineRadio2">未承認</label>
             </div>
             <div class="invalid-feedback">
                 承認か未承認を選んでください。
             </div>
         </div>
         <label for="exampleFormControlTextarea1" class="form-label">メッセージ(任意)</label>
-        <textarea class="form-control" id="exampleFormControlTextarea1" name="message" rows="3" placeholder="OK！じゃあ○○集合ね！/ごめん！その日は厳しい…"></textarea>
+        <textarea class="form-control" id="exampleFormControlTextarea1" name="message" rows="3"
+                  placeholder="OK！じゃあ○○集合ね！/ごめん！その日は厳しい…"></textarea>
         <button type=submit id="submit" class="btn btn-primary" name="id">送信</button>
     </form>
 </section>

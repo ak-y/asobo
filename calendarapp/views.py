@@ -19,11 +19,11 @@ API_VERSION = 'v3'
 # for "InsecureTransportError ("OAuth 2 MUST utilize https")"
 # (https://stackoverflow.com/questions/27785375/testing-flask-oauthlib-locally-without-https/27785830)
 import os
+
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 
 import datetime
 import json
-
 
 
 def index(request):
@@ -32,7 +32,7 @@ def index(request):
 
 def register(request):
     if request.method == "POST":
-        username =  request.POST['username']
+        username = request.POST['username']
         password = request.POST['password']
         try:
             User.objects.create_user(username, '', password)
@@ -68,7 +68,7 @@ def main(request):
         message = request.POST['message']
 
         # if is_acceppted:
-            # カレンダーに予定追加
+        # カレンダーに予定追加
 
         # リクエストテーブル更新
         Request.objects.filter(id=id).update(admin_message=message, is_accepted=is_accepted)
@@ -82,12 +82,12 @@ def main(request):
     else:
         credentials_dict = json.loads(Calendar.objects.get(user=user).credentials)
         credentials = google.oauth2.credentials.Credentials(
-            token = credentials_dict["token"],
-            refresh_token = credentials_dict["refresh_token"],
-            token_uri = credentials_dict["token_uri"],
-            client_id = credentials_dict["client_id"],
-            client_secret = credentials_dict["client_secret"],
-            scopes = credentials_dict["scopes"])
+            token=credentials_dict["token"],
+            refresh_token=credentials_dict["refresh_token"],
+            token_uri=credentials_dict["token_uri"],
+            client_id=credentials_dict["client_id"],
+            client_secret=credentials_dict["client_secret"],
+            scopes=credentials_dict["scopes"])
 
         # build service and execute
         service = googleapiclient.discovery.build(
@@ -150,7 +150,8 @@ def requester_main(request, user_id):
         message = request.POST['message']
         start_at = request.POST['start_at']
         end_at = request.POST['end_at']
-        Request.objects.create(user=user, requester_name=requester_name,requester_mail_address=requester_mail_address, message=message, start_at=start_at, end_at=end_at)
+        Request.objects.create(user=user, requester_name=requester_name, requester_mail_address=requester_mail_address,
+                               message=message, start_at=start_at, end_at=end_at)
 
         # メール送信
         mail_address = 'croissant.calendar@gmail.com'  # user.email
@@ -173,7 +174,8 @@ def requester_main(request, user_id):
 
         dt_now_iso, dt_90d_later_iso = get_datetime()
 
-        requester_event_list = get_event_list(requester_calendar_id_list, requester_service, dt_now_iso, dt_90d_later_iso)
+        requester_event_list = get_event_list(requester_calendar_id_list, requester_service, dt_now_iso,
+                                              dt_90d_later_iso)
         print(requester_event_list)
 
         # 以下でadminの予定を取ってくる
@@ -200,11 +202,11 @@ def requester_main(request, user_id):
 
 def email(sender_name, message, mail_address, *is_accepted):
     # admin or actor によってtitle, contentを変える(is_acceptedの有無で条件分岐):
-    if is_accepted: # from admin to actor
+    if is_accepted:  # from admin to actor
         result = '承認' if is_accepted[0] == True else '拒否'
         title = sender_name + 'さんへのリクエストが' + result + 'されました'
         content = sender_name + 'さんへのリクエストが' + result + 'されました。\n\n' + sender_name + 'さんからのメッセージ：' + message
-    else:           # from actor to admin
+    else:  # from actor to admin
         title = sender_name + 'さんからasobo!のリクエストが送られてきました'
         content = sender_name + 'さんからリクエストが来ています。\n\n確認する：http://127.0.0.1:8000/calendar/signin'
     send_mail(
@@ -227,12 +229,12 @@ def credentials_to_dict(credentials):
 
 def get_credentials(credentials_dict):
     return google.oauth2.credentials.Credentials(
-            token = credentials_dict["token"],
-            refresh_token = credentials_dict["refresh_token"],
-            token_uri = credentials_dict["token_uri"],
-            client_id = credentials_dict["client_id"],
-            client_secret = credentials_dict["client_secret"],
-            scopes = credentials_dict["scopes"])
+        token=credentials_dict["token"],
+        refresh_token=credentials_dict["refresh_token"],
+        token_uri=credentials_dict["token_uri"],
+        client_id=credentials_dict["client_id"],
+        client_secret=credentials_dict["client_secret"],
+        scopes=credentials_dict["scopes"])
 
 
 def get_datetime():
@@ -262,14 +264,15 @@ def get_event_list(calendar_id_list, service, dt_now_iso, dt_90d_later_iso):
     for calendar_id in calendar_id_list:
         page_token = None
         while True:
-            events = service.events().list(calendarId=calendar_id, pageToken=page_token, timeMin=dt_now_iso, timeMax=dt_90d_later_iso).execute()
+            events = service.events().list(calendarId=calendar_id, pageToken=page_token, timeMin=dt_now_iso,
+                                           timeMax=dt_90d_later_iso).execute()
             for event in events['items']:
                 event_info = dict()
                 event_info['title'] = event['summary']
-                if 'dateTime' in event['start']: # ISO表記
-                    event_info['start'] = event['start']['dateTime'][:19] # 秒以下を取り除く
+                if 'dateTime' in event['start']:  # ISO表記
+                    event_info['start'] = event['start']['dateTime'][:19]  # 秒以下を取り除く
                     event_info['end'] = event['end']['dateTime'][:19]
-                elif 'date' in event['start']:   # all-dayのイベント、ハイフンでつないだ表記
+                elif 'date' in event['start']:  # all-dayのイベント、ハイフンでつないだ表記
                     event_info['start'] = event['start']['date']
                     event_info['end'] = event['end']['date']
                 event_list.append(event_info)
@@ -322,7 +325,7 @@ def oauth2callback(request, temp):
     if temp == 'True':  # Store credentials in the session.
         request.session['credentials'] = credentials
         return redirect('requester_main', user_id=request.session['user_id'])
-    else:     # Store credentials in the database.
+    else:  # Store credentials in the database.
         credentials = json.dumps(credentials)
         user = request.user
         Calendar.objects.create(user=user, credentials=credentials)
