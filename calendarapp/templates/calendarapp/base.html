@@ -7,6 +7,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <!-- CSS -->
+    <link rel='stylesheet' type="text/css" href="{% static 'croissant/css/style.css' %}">
+      <link rel='stylesheet' type="text/css" href="{% static 'croissant/css/base.css' %}">
+      <title>asobo!</title>
+
     <link rel='stylesheet' type="text/css" href="{% static 'croissant/css/base.css' %}">
     <title>CALENDAR APP</title>
 
@@ -19,9 +23,11 @@
 		{% endblock header %}
   </head>
   <body>
+  <div class="footerFixed">
   <header>
-      <img src="{% static 'croissant/image/logo.png' %}" alt="ロゴサンプル">
+
   </header>
+
 		{% block content %}
 		{% endblock content %}
 
@@ -38,5 +44,6 @@
     <footer>
         <p>＠焼きたてのクロワッサン</p>
     </footer>
+  </div>
   </body>
 </html>

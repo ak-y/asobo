@@ -1,6 +1,8 @@
 {% extends 'calendarapp/base.html' %}
+{% load static %}
 
 {% block header %}
+    <a href="{{'main'}}" ><img src="{% static 'croissant/image/logo.png' %}" alt="ロゴ"></a>
     <title>リクエスト一覧</title>
 {% endblock header %}
 
