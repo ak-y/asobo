@@ -38,7 +38,7 @@ def register(request):
             User.objects.create_user(username, '', password)
             user = authenticate(request, username=username, password=password)
             login(request, user)
-            return redirect('authorize')
+            return redirect('authorize', temp='False')
         except IntegrityError:
             return render(request, 'calendarapp/register.html', {
                 'error': 'このユーザーは既に登録されています'
@@ -158,26 +158,43 @@ def requester_main(request, user_id):
 
         return redirect('requester_main', user_id=user.id)
     else:
+        request.session['user_id'] = user.id
+        if 'credentials' not in request.session:  # requesterのカレンダー認証
+            return redirect('authorize', temp='True')
+
+        # 以下でrequesterの予定を取ってくる
+        requester_credentials_dict = request.session['credentials']
+        requester_credentials = get_credentials(requester_credentials_dict)
+
+        requester_service = googleapiclient.discovery.build(
+            API_SERVICE_NAME, API_VERSION, credentials=requester_credentials)
+
+        requester_calendar_id_list = get_calendar_id_list(requester_service)
+
+        dt_now_iso, dt_90d_later_iso = get_datetime()
+
+        requester_event_list = get_event_list(requester_calendar_id_list, requester_service, dt_now_iso, dt_90d_later_iso)
+        print(requester_event_list)
+
+        # 以下でadminの予定を取ってくる
         credentials_dict = json.loads(Calendar.objects.get(user=user).credentials)
-        credentials = google.oauth2.credentials.Credentials(
-            token = credentials_dict["token"],
-            refresh_token = credentials_dict["refresh_token"],
-            token_uri = credentials_dict["token_uri"],
-            client_id = credentials_dict["client_id"],
-            client_secret = credentials_dict["client_secret"],
-            scopes = credentials_dict["scopes"])
+        credentials = get_credentials(credentials_dict)
 
         service = googleapiclient.discovery.build(
             API_SERVICE_NAME, API_VERSION, credentials=credentials)
 
         calendar_id_list = get_calendar_id_list(service)
 
-        dt_now_iso, dt_90d_later_iso = get_datetime()
-
         event_list = get_event_list(calendar_id_list, service, dt_now_iso, dt_90d_later_iso)
+
+        for event in event_list:
+            event['title'] = '予定あり'
+
+        request.session.clear()
 
         return render(request, 'calendarapp/requester_main.html', {
             'event_list': event_list,
+            'requester_event_list': requester_event_list,
         })
 
 
@@ -206,6 +223,16 @@ def credentials_to_dict(credentials):
             'client_id': credentials.client_id,
             'client_secret': credentials.client_secret,
             'scopes': credentials.scopes}
+
+
+def get_credentials(credentials_dict):
+    return google.oauth2.credentials.Credentials(
+            token = credentials_dict["token"],
+            refresh_token = credentials_dict["refresh_token"],
+            token_uri = credentials_dict["token_uri"],
+            client_id = credentials_dict["client_id"],
+            client_secret = credentials_dict["client_secret"],
+            scopes = credentials_dict["scopes"])
 
 
 def get_datetime():
@@ -253,13 +280,16 @@ def get_event_list(calendar_id_list, service, dt_now_iso, dt_90d_later_iso):
     return event_list
 
 
-def authorize(request):
+def authorize(request, temp):
     # Create flow instance to manage the OAuth 2.0 Authorization Grant Flow steps.
     flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
         CLIENT_SECRETS_FILE, scopes=SCOPES)
 
     # url when authorization done
-    flow.redirect_uri = 'http://127.0.0.1:8000/calendar/oauth2callback'
+    if temp == 'True':
+        flow.redirect_uri = 'http://127.0.0.1:8000/calendar/oauth2callback/True'
+    else:
+        flow.redirect_uri = 'http://127.0.0.1:8000/calendar/oauth2callback/False'
 
     # authorization-url
     # Enable offline access so that you can refresh an access token without re-prompting the user for permission.
@@ -268,26 +298,32 @@ def authorize(request):
     # Store the state so the callback can verify the auth server response.
     request.session['state'] = state
 
-    return redirect(authorization_url)
+    return redirect(authorization_url, temp=temp)
 
 
-def oauth2callback(request):
-    user = request.user
+def oauth2callback(request, temp):
     # Specify the state when creating the flow in the callback so that it can
     # verified in the authorization server response.
     state = request.session['state']
 
     flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
         CLIENT_SECRETS_FILE, scopes=SCOPES, state=state)
-    flow.redirect_uri = 'http://127.0.0.1:8000/calendar/oauth2callback'
+    if temp == 'True':
+        flow.redirect_uri = 'http://127.0.0.1:8000/calendar/oauth2callback/True'
+    else:
+        flow.redirect_uri = 'http://127.0.0.1:8000/calendar/oauth2callback/False'
 
     # Use the authorization server's response to fetch the OAuth 2.0 tokens.
     authorization_response = request.build_absolute_uri()
     flow.fetch_token(authorization_response=authorization_response)
 
-    # Store credentials in the database.
     credentials = flow.credentials
-    credentials = json.dumps(credentials_to_dict(credentials))
-    Calendar.objects.create(user=user, credentials=credentials)
-
-    return redirect('main')
+    credentials = credentials_to_dict(credentials)
+    if temp == 'True':  # Store credentials in the session.
+        request.session['credentials'] = credentials
+        return redirect('requester_main', user_id=request.session['user_id'])
+    else:     # Store credentials in the database.
+        credentials = json.dumps(credentials)
+        user = request.user
+        Calendar.objects.create(user=user, credentials=credentials)
+        return redirect('main')
