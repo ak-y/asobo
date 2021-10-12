@@ -2,7 +2,7 @@
   margin:0; padding:0;
 }
 header {
-  width: 100%;
+  width: 100vw;
   padding: 15px 0;
   margin: 0 auto;
   text-align: center;
@@ -13,12 +13,20 @@ header .headline{
   font-family: fantasy;
 }
 
+.footerFixed{
+    min-height: 100vh; /* ←コンテンツの高さの最小値＝ブラウザの高さに指定 */
+    position: relative;/* ←相対位置 */
+    padding-bottom: 60px; /* ←フッターの高さを指定 */
+    box-sizing: border-box;
+    /* ↑ヘッダーやフッターを含むすべての要素の高さ＝min-height:100vhになるように指定 */
+}
+
 footer {
-  width: 100%;
-  height: 120px;
   text-align: center;
-  padding: 50px 0;
+  width: 100vw;
   background-color: #ffffff;
+  position: absolute;/*←絶対位置*/
+  bottom: 0; /*下に固定*/
 }
 .footer-text {
   color: #fff;
