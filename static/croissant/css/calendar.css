@@ -2,6 +2,16 @@
     width: 40%;
 }
 
+#submit {
+    background: #f6ad49;
+    color: #fff;
+}
+
+.modal {
+    text
+    text-align: center;
+}
+
 .no-data {
   display: flex;
   justify-content: center;
@@ -18,9 +28,7 @@ body {
 }
 
 // fullcalendarのCSS
-.fc-widget-header{
-    background-color:blue;
-}
+
 
 // ポップアップ表示のCSS
 #open,

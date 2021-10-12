@@ -2,19 +2,26 @@
 {% load static %}
 
 {% block header %}
+<!--css-->
+<link rel='stylesheet' type="text/css" href="{% static 'croissant/css/calendar.css' %}">
+<!--fullcalendar-->
 <link href="{% static 'croissant/fullcalendar/main.css' %}" rel='stylesheet'/>
 <script src="{% static 'croissant/fullcalendar/main.js' %}"></script>
+<!--fullcalendarで使用するbootstrap-->
+<link href='https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.css' rel='stylesheet' />
+<link href='https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.1/css/all.css' rel='stylesheet'>
 <!-- ポップアップ表示のライブラリSweetAlert -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
 <!--FontAwesome-->
 <link href="https://use.fontawesome.com/releases/v5.0.8/css/all.css" rel="stylesheet">
-<!--css-->
-<link rel='stylesheet' type="text/css" href="{% static 'croissant/css/calendar.css' %}">
+
 <script>
 
     document.addEventListener('DOMContentLoaded', function() {
-<!--views.pyからeventデータ取得-->
+<!--views.pyからactorのeventデータ取得-->
         var events = {{ event_list|safe }};
+<!--requesterのeventデータ取得-->
+        var requester_events;
 
         var calendarEl = document.getElementById('calendar');
 
@@ -51,13 +58,13 @@
             },
 <!--            themeSystem: 'bootstrap',// テーマの設定-->
             scrollTime: '08:00',// 開始時間の設定
+            timeZone: 'local',// タイムゾーン
             initialView: 'timeGridWeek',// カレンダーの種類
             nowIndicator: false,// 現在時刻の目印表示
             allDaySlot: true,// 終日イベント欄の表示
             expandRows: true,// pcなどで表示する縦幅を変えるとそれに対応して時間幅も合わせてくれる設定
-<!--            stickyHeaderDates: true,// スクロールした際に日付が一番上に残ってくれる設定-->
-            slotDuration: '00:30:00',// 時間区切りの設定
-            slotLabelInterval: '01:00',// 時間テキストの表示間隔
+            stickyHeaderDates: false,// スクロールした際に日付が一番上に残ってくれる設定
+            selectable: true,// ドラッグで選択可能
             contentHeight: '800px',// 要設定
 <!--オリジナルボタンの作成-->
             customButtons: {
@@ -77,17 +84,20 @@
             },
 
 <!--カレンダークリック時のアクション-->
-            dateClick: function (arg) {
-                var start_datetime = new String(arg.date.getFullYear() + "-" + arg.date.getMonth() + "-" + arg.date.getDate() + "T" + arg.date.getHours() + ":" + arg.date.getMinutes());
-                console.log(start_datetime);
-                document.getElementById('start_at').value=start_datetime;
+<!--            dateClick: function (arg) {-->
+<!--                document.getElementById('start_at').value=arg.dateStr.substr(0,19);-->
+<!--                modal.classList.remove('hidden');-->
+<!--                mask.classList.remove('hidden');-->
+<!--            },-->
+            select: function (arg) {
+                document.getElementById('start_at').value=arg.startStr.substr(0,19);
+                document.getElementById('end_at').value=arg.endStr.substr(0,19);
                 modal.classList.remove('hidden');
                 mask.classList.remove('hidden');
             },
 
             navLinks: false, // can click day/week names to navigate views
             editable: false,
-            selectable: false,
             selectMirror: true,
             dayMaxEvents: true, // allow "more" link when too many events
 
@@ -96,8 +106,13 @@
 <!--グーグルカレンダーの情報取得-->
                 {
                     events: events,
-                    color: 'gray',
-                    textColor: 'black'
+                    color: '#f6ad49',
+                    display: 'background',
+                },
+                {
+                    events: requester_events,
+                    color: '#d3b285',
+                    display: 'background',
                 },
             ]
         });
@@ -105,23 +120,43 @@
         calendar.render();
 
 <!--ポップアップ画面の処理-->
-      const close = document.getElementById('close');
       const modal = document.getElementById('modal');
       const mask = document.getElementById('mask');
 
-      close.addEventListener('click', function () {
-        modal.classList.add('hidden');
-        mask.classList.add('hidden');
-        Swal.fire({
-            title: "送信されました！",
-            icon: "success",
-            button: "閉じる",
-        });
-      });
+<!--送信ボタンが押された-->
       mask.addEventListener('click', function () {
         modal.classList.add('hidden');
         mask.classList.add('hidden');
       });
+
+<!--入力情報に漏れがないか-->
+      (function () {
+          'use strict'
+
+          // Fetch all the forms we want to apply custom Bootstrap validation styles to
+          var forms = document.querySelectorAll('.needs-validation')
+
+          // Loop over them and prevent submission
+          Array.prototype.slice.call(forms)
+            .forEach(function (form) {
+              form.addEventListener('submit', function (event) {
+                if (!form.checkValidity()) {
+                  event.preventDefault()
+                  event.stopPropagation()
+                }else{
+                    modal.classList.add('hidden');
+                    mask.classList.add('hidden');
+                    Swal.fire({
+                        title: "送信されました！",
+                        icon: "success",
+                        button: "閉じる",
+                    });
+                };
+
+                form.classList.add('was-validated')
+              }, false)
+            })
+      })()
     });
 
 
@@ -137,20 +172,23 @@
 <!--ポップアップ表示-->
 <div id="mask" class="hidden"></div>
 <section id="modal" class="hidden">
-    <h3>リクエスト申請</h3>
-    <form method="post">
+    <form method="post"class="row g-1 needs-validation" name="request" novalidate>
         {% csrf_token %}
-        <label>名前</label>
-        <input type="text" class="form-control" name="requester_name">
-        <label>Email</label>
-        <input type="email" class="form-control" id="exampleInputEmail1" name="requester_mail_address">
-        <label>開始</label>
-        <input type="datetime-local" class="form-control" id="start_at" name="start_at" value="2021-09-13T06:30">
-        <label>終了</label>
-        <input type="datetime-local" class="form-control" name="end_at">
-        <label>メッセージ</label>
-        <textarea class="form-control" id="exampleFormControlTextarea1" name="message" rows="3"></textarea>
-        <button type=submit id="close">提出</button>
+        <h3 class="modal">リクエスト申請</h3>
+
+        <label class="form-label" for="name">名前</label>
+        <input type="text" class="form-control" id="name" name="requester_name" required>
+        <label class="form-label" for="exampleInputEmail" >Email</label>
+        <input type="email" class="form-control" id="exampleInputEmail" name="requester_mail_address" required>
+        <label class="form-label" for="title">タイトル</label>
+        <input type="text" class="form-control" id="title" name="title" required>
+        <label class="form-label" for="start_at">開始</label>
+        <input type="datetime-local" class="form-control" id="start_at" name="start_at" required>
+        <label class="form-label" for="end_at">終了</label>
+        <input type="datetime-local" class="form-control" id="end_at" name="end_at" required>
+        <label class="form-label" for="exampleFormControlTextarea">メッセージ(任意)</label>
+        <textarea class="form-control" id="exampleFormControlTextarea" name="message" rows="3" placeholder="この日に○○行きたいな！"></textarea>
+        <button type=submit class="btn btn-primary" id="submit">提出</button>
     </form>
 </section>
 {% endblock content %}
