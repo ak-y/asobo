@@ -53,9 +53,7 @@
 
 <!--カレンダークリック時のアクション-->
             dateClick: function (arg) {
-                var start_datetime = new String(arg.date.getFullYear() + "-" + arg.date.getMonth() + "-" + arg.date.getDate() + "T" + arg.date.getHours() + ":" + arg.date.getMinutes());
-                console.log(start_datetime);
-                document.getElementById('start_at').value=start_datetime;
+                document.getElementById('start_at').value=arg.dateStr.substr(0,19);
                 modal.classList.remove('hidden');
                 mask.classList.remove('hidden');
             },
