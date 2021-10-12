@@ -4,6 +4,8 @@
 {% block header %}
 <!--css-->
 <link rel='stylesheet' type="text/css" href="{% static 'croissant/css/calendar.css' %}">
+<!--ロゴ-->
+<img src="{% static 'croissant/image/logo.png' %}" alt="ロゴ">
 <!--fullcalendar-->
 <link href="{% static 'croissant/fullcalendar/main.css' %}" rel='stylesheet'/>
 <script src="{% static 'croissant/fullcalendar/main.js' %}"></script>
@@ -31,12 +33,11 @@
         var calendar = new FullCalendar.Calendar(calendarEl, {
 <!--週表示カレンダーの詳細設定-->
           views: {
-              timeGridWeek: {
+              timeGrid: {
 <!--タイトルのフォーマット-->
                 titleFormat: function (date) {
                   const startMonth = date.start.month + 1;
                   const endMonth = date.end.month + 1;
-
                   if (startMonth === endMonth) {
                      return startMonth + '月';
                   } else {
@@ -53,12 +54,13 @@
                 },
               },
           },
+
             locale: 'ja',// 日本語
             firstDay: (new Date()).getDay(),// 開始日の設定
             validRange: {
                 start: new Date()
             },
-<!--            themeSystem: 'bootstrap',// テーマの設定-->
+            themeSystem: 'bootstrap',// テーマの設定
             scrollTime: '08:00',// 開始時間の設定
             timeZone: 'local',// タイムゾーン
             initialView: 'timeGridWeek',//　カレンダーの種類
@@ -74,7 +76,7 @@
             customButtons: {
 <!--ログアウトボタン-->
                 logout: {
-                    text: 'logout',
+                    text: 'ログアウト',
                     backgroundColor: 'red',
                     click: function() {
                         location.href = "http://127.0.0.1:8000/calendar/signout"
@@ -82,14 +84,14 @@
                 },
 <!--リクエストボタン-->
                 request: {
-                    text: 'request',
+                    text: '一覧',
                     click: function() {
                         location.href = "http://127.0.0.1:8000/calendar/request"
                     }
                 },
 <!--シェアボタン-->
                 share: {
-                    text: 'share',
+                    text: '共有',
                     click: function() {
                         navigator.clipboard.writeText(url);
                         Swal.fire({
@@ -104,9 +106,15 @@
             },
 <!--ツールバーのボタン設定-->
             headerToolbar: {
-                left: 'prev,next today',
+                left: 'prev,next today timeGridWeek,timeGridDay',
                 center: 'title',
                 right: 'share request logout'
+            },
+<!--ボタンの名前設定-->
+            buttonText: {
+                today: '今日',
+                day: '日',
+                week: '週',
             },
 <!--イベントクリック時のアクション-->
             eventClick: function (info){
@@ -119,6 +127,10 @@
             },
 
             navLinks: true, // can click day/week names to navigate views
+<!--            navLinkDayClick: function(date, jsEvent) {-->
+<!--              console.log('day', date.toISOString());-->
+<!--              console.log('coords', jsEvent.pageX, jsEvent.pageY);-->
+<!--            },-->
             editable: false,
             selectMirror: true,
             dayMaxEvents: true, // allow "more" link when too many events
