@@ -150,8 +150,7 @@ def requester_main(request, user_id):
         message = request.POST['message']
         start_at = request.POST['start_at']
         end_at = request.POST['end_at']
-        Request.objects.create(user=user, requester_name=requester_name, requester_mail_address=requester_mail_address,
-                               message=message, start_at=start_at, end_at=end_at)
+        Request.objects.create(user=user, requester_name=requester_name, requester_mail_address=requester_mail_address, message=message, start_at=start_at, end_at=end_at)
 
         # メール送信
         mail_address = 'croissant.calendar@gmail.com'  # user.email
@@ -174,9 +173,7 @@ def requester_main(request, user_id):
 
         dt_now_iso, dt_90d_later_iso = get_datetime()
 
-        requester_event_list = get_event_list(requester_calendar_id_list, requester_service, dt_now_iso,
-                                              dt_90d_later_iso)
-        print(requester_event_list)
+        requester_event_list = get_event_list(requester_calendar_id_list, requester_service, dt_now_iso, dt_90d_later_iso)
 
         # 以下でadminの予定を取ってくる
         credentials_dict = json.loads(Calendar.objects.get(user=user).credentials)
@@ -208,7 +205,7 @@ def email(sender_name, message, mail_address, *is_accepted):
         content = sender_name + 'さんへのリクエストが' + result + 'されました。\n\n' + sender_name + 'さんからのメッセージ：' + message
     else:  # from actor to admin
         title = sender_name + 'さんからasobo!のリクエストが送られてきました'
-        content = sender_name + 'さんからリクエストが来ています。\n\n確認する：http://127.0.0.1:8000/calendar/signin'
+        content = sender_name + 'さんからリクエストが来ています。\n\n確認する：http://127.0.0.1:8000/signin'
     send_mail(
         title,
         content,
@@ -264,8 +261,7 @@ def get_event_list(calendar_id_list, service, dt_now_iso, dt_90d_later_iso):
     for calendar_id in calendar_id_list:
         page_token = None
         while True:
-            events = service.events().list(calendarId=calendar_id, pageToken=page_token, timeMin=dt_now_iso,
-                                           timeMax=dt_90d_later_iso).execute()
+            events = service.events().list(calendarId=calendar_id, pageToken=page_token, timeMin=dt_now_iso, timeMax=dt_90d_later_iso).execute()
             for event in events['items']:
                 event_info = dict()
                 event_info['title'] = event['summary']
@@ -290,9 +286,9 @@ def authorize(request, temp):
 
     # url when authorization done
     if temp == 'True':
-        flow.redirect_uri = 'http://127.0.0.1:8000/calendar/oauth2callback/True'
+        flow.redirect_uri = 'http://127.0.0.1:8000/oauth2callback/True'
     else:
-        flow.redirect_uri = 'http://127.0.0.1:8000/calendar/oauth2callback/False'
+        flow.redirect_uri = 'http://127.0.0.1:8000/oauth2callback/False'
 
     # authorization-url
     # Enable offline access so that you can refresh an access token without re-prompting the user for permission.
@@ -312,9 +308,9 @@ def oauth2callback(request, temp):
     flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
         CLIENT_SECRETS_FILE, scopes=SCOPES, state=state)
     if temp == 'True':
-        flow.redirect_uri = 'http://127.0.0.1:8000/calendar/oauth2callback/True'
+        flow.redirect_uri = 'http://127.0.0.1:8000/oauth2callback/True'
     else:
-        flow.redirect_uri = 'http://127.0.0.1:8000/calendar/oauth2callback/False'
+        flow.redirect_uri = 'http://127.0.0.1:8000/oauth2callback/False'
 
     # Use the authorization server's response to fetch the OAuth 2.0 tokens.
     authorization_response = request.build_absolute_uri()

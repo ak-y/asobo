@@ -25,7 +25,7 @@
         var user_id = {{ user_id|safe }};
 
 <!--URLの作成-->
-        var url = new String("http://127.0.0.1:8000/calendar/requester_main/" + user_id);
+        var url = new String("http://127.0.0.1:8000/requester_main/" + user_id);
 
         var calendarEl = document.getElementById('calendar');
 
@@ -102,14 +102,14 @@
                     text: 'ログアウト',
                     backgroundColor: 'red',
                     click: function() {
-                        location.href = "http://127.0.0.1:8000/calendar/signout"
+                        location.href = "http://127.0.0.1:8000/signout"
                     }
                 },
 <!--リクエストボタン-->
                 request: {
                     text: '一覧',
                     click: function() {
-                        location.href = "http://127.0.0.1:8000/calendar/request"
+                        location.href = "http://127.0.0.1:8000/request"
                     }
                 },
 <!--シェアボタン-->
