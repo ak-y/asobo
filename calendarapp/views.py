@@ -215,7 +215,8 @@ def requester_main(request, user_id):
         event_list = get_event_list(calendar_id_list, service, dt_now_iso, dt_90d_later_iso)
 
         for event in event_list:
-            event['title'] = '予定あり'
+            if event['calendar_id'] != 'ja.japanese#holiday@group.v.calendar.google.com':
+                event['title'] = '予定あり'
 
         request.session.clear()
 
@@ -292,6 +293,7 @@ def get_event_list(calendar_id_list, service, dt_now_iso, dt_90d_later_iso):
             events = service.events().list(calendarId=calendar_id, pageToken=page_token, timeMin=dt_now_iso, timeMax=dt_90d_later_iso).execute()
             for event in events['items']:
                 event_info = dict()
+                event_info['calendar_id'] = calendar_id
                 event_info['title'] = event['summary']
                 if 'dateTime' in event['start']:  # ISO表記
                     event_info['start'] = event['start']['dateTime'][:19]  # 秒以下を取り除く
