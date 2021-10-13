@@ -4128,7 +4128,7 @@ var FullCalendar = (function (exports) {
             list: 'list',
         },
         weekText: 'W',
-        allDayText: 'all-day',
+        allDayText: '終日',
         moreLinkText: 'more',
         noEventsText: 'No events to display',
     };
