@@ -1,0 +1,43 @@
+.btn {
+    padding: 0.5em 1.0em;
+    border: 0 none;
+    border-radius: 10px;/*角の丸み*/
+    font-weight: 700;
+    font-size: 20pt;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    box-shadow: inset 0 2px 0 rgba(255,255,255,0.2), 0 2px 2px rgba(0, 0, 0, 0.19);
+}
+.btn-primary {
+    background: #f6ad49; //ボタンの背景色
+    color: #FFF; //ボタンのテキストの色
+}
+
+.btn-primary:hover, .btn-primary:focus,
+.btn-primary:active, .btn-primary:active:focus, .btn-primary:active:hover, .btn-primary:active.focus,
+.btn-primary.active, .btn-primary.active:focus, .btn-primary.active:hover, .btn-primary.active.focus,
+.open > .dropdown-toggle.btn-primary,
+.open > .dropdown-toggle.btn-primary:hover,
+.open > .dropdown-toggle.btn-primary:focus,
+.open > .dropdown-toggle.btn-primary.focus,
+.btn-primary.disabled:hover, .btn-primary[disabled]:hover, fieldset[disabled] .btn-primary:hover,
+.btn-primary.disabled:focus, .btn-primary[disabled]:focus, fieldset[disabled] .btn-primary:focus,
+.btn-primary.disabled.focus, .btn-primary[disabled].focus, fieldset[disabled] .btn-primary.focus {
+    background: #f58f00; //ボタンの上にポインタを持ってきたり、クリックしたりした時の背景色
+    color: #f58f00; //ボタンの上にポインタを持ってきたり、クリックしたりした時のテキストの色
+}
+
+p.p1 {
+    margin-bottom: 1em;
+}
+p.p2 {
+    margin-bottom: 2em;
+}
+div.container {
+   height: 10em;
+   position: relative }              /* 1 */
+div.container {
+   margin: 0;
+   position: absolute;               /* 2 */
+   top: 50%;                         /* 3 */
+   transform: translate(0, -50%) }   /* 4 */

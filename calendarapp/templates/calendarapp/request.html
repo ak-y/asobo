@@ -3,11 +3,15 @@
 
 {% block header %}
 <a href="{{'main'}}"><img src="{% static 'croissant/image/logo.png' %}" alt="ロゴ" class="logo_s"></a>
+<link rel='stylesheet' type="text/css" href="{% static 'croissant/css/request.css' %}">
 <title>リクエスト一覧</title>
 {% endblock header %}
 
 {% block content %}
-<h1 class="h3 mb-3 fw-normal">リクエスト一覧</h1>
+<div style="text-align: center;">
+<h1>リクエスト一覧</h1>
+</div>
+<p class="p1"></p>
 {% for request in requests %}
 <div class="list-group">
     <a href="#" class="list-group-item list-group-item-action">
@@ -19,6 +23,8 @@
     </a>
 </div>
 {% empty %}
+<div style="text-align: center;">
 <p>リクエストはありません</p>
+</div>
 {% endfor %}
 {% endblock content %}
