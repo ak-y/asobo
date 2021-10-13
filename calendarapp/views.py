@@ -67,8 +67,33 @@ def main(request):
         is_accepted = True if request.POST['is_accepted'] == 'Yes' else False
         message = request.POST['message']
 
-        # if is_acceppted:
         # カレンダーに予定追加
+        if is_accepted:
+            event = Request.objects.get(id=id)
+            title = event.title
+            start = event.start_at.isoformat()[:19]
+            end = event.end_at.isoformat()[:19]
+            body = {
+                'summary': title,
+                'start': {
+                    'dateTime': start,
+                    'timeZone': 'Asia/Tokyo',
+                },
+                'end': {
+                    'dateTime': end,
+                    'timeZone': 'Asia/Tokyo',
+                },
+            }
+            credentials_dict = json.loads(Calendar.objects.get(user=user).credentials)
+            credentials = google.oauth2.credentials.Credentials(
+                token=credentials_dict["token"],
+                refresh_token=credentials_dict["refresh_token"],
+                token_uri=credentials_dict["token_uri"],
+                client_id=credentials_dict["client_id"],
+                client_secret=credentials_dict["client_secret"],
+                scopes=credentials_dict["scopes"])
+            service = googleapiclient.discovery.build(API_SERVICE_NAME, API_VERSION, credentials=credentials)
+            service.events().insert(calendarId='primary', body=body).execute()
 
         # リクエストテーブル更新
         Request.objects.filter(id=id).update(admin_message=message, is_accepted=is_accepted)
@@ -77,8 +102,8 @@ def main(request):
         sender_name = user.username
         mail_address = Request.objects.get(id=id).requester_mail_address
         email(sender_name, message, mail_address, is_accepted)
+
         return redirect('main')
-        pass
     else:
         credentials_dict = json.loads(Calendar.objects.get(user=user).credentials)
         credentials = google.oauth2.credentials.Credentials(
@@ -190,7 +215,8 @@ def requester_main(request, user_id):
         event_list = get_event_list(calendar_id_list, service, dt_now_iso, dt_90d_later_iso)
 
         for event in event_list:
-            event['title'] = '予定あり'
+            if event['calendar_id'] != 'ja.japanese#holiday@group.v.calendar.google.com':
+                event['title'] = '予定あり'
 
         request.session.clear()
 
@@ -267,6 +293,7 @@ def get_event_list(calendar_id_list, service, dt_now_iso, dt_90d_later_iso):
             events = service.events().list(calendarId=calendar_id, pageToken=page_token, timeMin=dt_now_iso, timeMax=dt_90d_later_iso).execute()
             for event in events['items']:
                 event_info = dict()
+                event_info['calendar_id'] = calendar_id
                 event_info['title'] = event['summary']
                 if 'dateTime' in event['start']:  # ISO表記
                     event_info['start'] = event['start']['dateTime'][:19]  # 秒以下を取り除く
