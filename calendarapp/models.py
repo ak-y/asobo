@@ -11,6 +11,7 @@ class Request(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     is_accepted = models.BooleanField(null=True, blank=True)
     admin_message = models.CharField(max_length=100, blank=True)
+    title = models.CharField(max_length=15)
 
     def __str__(self):
         return self.requester_name
