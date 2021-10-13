@@ -3,7 +3,7 @@ from . import views
 
 # app_name = "calendarapp"
 urlpatterns = [
-    path('index', views.index, name='index'),
+    path('', views.index, name='index'),
     path('register', views.register, name='register'),
     path('signin', views.signin, name='signin'),
     path('main', views.main, name='main'),
