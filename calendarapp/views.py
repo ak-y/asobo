@@ -161,19 +161,19 @@ def requester_main(request, user_id):
 
         return redirect('requester_main', user_id=user.id)
     else:
-        # request.session['user_id'] = user.id
-        # if 'credentials' not in request.session:  # requesterのカレンダー認証
-        #     return redirect('authorize', temp='True')
-        #
-        # # 以下でrequesterの予定を取ってくる
-        # requester_credentials_dict = request.session['credentials']
-        # requester_credentials = get_credentials(requester_credentials_dict)
-        #
-        # requester_service = googleapiclient.discovery.build(
-        #     API_SERVICE_NAME, API_VERSION, credentials=requester_credentials)
-        #
-        # requester_calendar_id_list = get_calendar_id_list(requester_service)
-        #
+        request.session['user_id'] = user.id
+        if 'credentials' not in request.session:  # requesterのカレンダー認証
+            return redirect('authorize', temp='True')
+
+        # 以下でrequesterの予定を取ってくる
+        requester_credentials_dict = request.session['credentials']
+        requester_credentials = get_credentials(requester_credentials_dict)
+
+        requester_service = googleapiclient.discovery.build(
+            API_SERVICE_NAME, API_VERSION, credentials=requester_credentials)
+
+        requester_calendar_id_list = get_calendar_id_list(requester_service)
+
         dt_now_iso, dt_90d_later_iso = get_datetime()
 
         requester_event_list = get_event_list(requester_calendar_id_list, requester_service, dt_now_iso, dt_90d_later_iso)
@@ -196,7 +196,7 @@ def requester_main(request, user_id):
 
         return render(request, 'calendarapp/requester_main.html', {
             'event_list': event_list,
-            # 'requester_event_list': requester_event_list,
+            'requester_event_list': requester_event_list,
         })
 
 
