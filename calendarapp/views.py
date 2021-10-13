@@ -111,9 +111,10 @@ def main(request):
             request_info = dict()
             request_info['id'] = a_request.id
             request_info['requester_name'] = a_request.requester_name
-            request_info['title'] = a_request.message
+            request_info['title'] = a_request.title
             request_info['start'] = a_request.start_at.isoformat()[:19]
             request_info['end'] = a_request.end_at.isoformat()[:19]
+            request_info['message'] = a_request.message
             request_list.append(request_info)
 
         # UPDATE database?
@@ -147,10 +148,12 @@ def requester_main(request, user_id):
         # DBへ保存
         requester_name = request.POST['requester_name']
         requester_mail_address = request.POST['requester_mail_address']
-        message = request.POST['message']
+        title = request.POST['title']
         start_at = request.POST['start_at']
         end_at = request.POST['end_at']
-        Request.objects.create(user=user, requester_name=requester_name, requester_mail_address=requester_mail_address, message=message, start_at=start_at, end_at=end_at)
+        message = request.POST['message']
+        Request.objects.create(user=user, requester_name=requester_name, requester_mail_address=requester_mail_address, title=title,
+                                message=message, start_at=start_at, end_at=end_at)
 
         # メール送信
         mail_address = 'croissant.calendar@gmail.com'  # user.email
