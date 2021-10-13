@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block header %}
-<a href="{{'index'}}" ><img src="{% static 'croissant/image/logo.png' %}" alt="ロゴ"></a>
+<a href="{{'index'}}" ><img src="{% static 'croissant/image/logo_big.png' %}" alt="ロゴ" class="logo_b"></a>
 {% endblock header %}
 
 {% block content %}
@@ -10,8 +10,6 @@
 <div class="container">
 <form method="post">
     {% csrf_token %}
-    <img class="mb-4" src="/docs/5.0/assets/brand/bootstrap-logo.svg" alt="" width="72" height="57">
-    <h1 class="h3 mb-3 fw-normal">ログインする</h1>
     {% if error %}
     {{ error }}
     {% endif %}
