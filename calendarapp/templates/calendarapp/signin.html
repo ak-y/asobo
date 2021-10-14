@@ -2,31 +2,44 @@
 {% load static %}
 
 {% block header %}
-<link rel='stylesheet' type="text/css" href="{% static 'croissant/css/button.css' %}">
-<a href="{{'/'}}" ><img src="{% static 'croissant/image/logo_big.png' %}" alt="ロゴ" class="logo_b"></a>
+<link rel='stylesheet' type="text/css" href="{% static 'croissant/css/logo.css' %}">
+{#<link rel='stylesheet' type="text/css" href="{% static 'croissant/css/button.css' %}">#}
+<link rel='stylesheet' type="text/css" href="{% static 'croissant/css/register.css' %}">
+<a href="{{'/'}}"><img src="{% static 'croissant/image/logo_big.png' %}" alt="ロゴ" class="logo_b"></a>
 {% endblock header %}
 
 {% block content %}
 
-<div class="container">
-<form method="post">
-    {% csrf_token %}
-    {% if error %}
-    {{ error }}
-    {% endif %}
-    <label for="inputEmail" class="visually-hidden">ユーザー名</label>
-    <input type="text" id="inputEmail" class="form-control input-lg" placeholder="ユーザー名" name="username" required="" autofocus="">
-    <p class="p1"></p>
-    <label for="inputPassword" class="visually-hidden">パスワード</label>
-    <input type="password" id="inputPassword" class="form-control input-lg" placeholder="パスワード" name="password" required="">
-    <div class="checkbox mb-3">
+<div class="form-body">
+    <div class="row">
+        <div class="form-holder">
+            <div class="form-content">
+                <div class="form-items">
+                    <h3>Log In</h3>
+                    <form method="post">
+                        {% csrf_token %}
+                        {% if error %}
+                        {{ error }}
+                        {% endif %}
+                        <label for="inputEmail" class="visually-hidden">ユーザー名</label>
+                        <input type="text" id="inputEmail" class="form-control input-lg" placeholder="ユーザー名" name="username" required="" autofocus="">
+                        <p class="p1"></p>
+                        <label for="inputPassword" class="visually-hidden">パスワード</label>
+                        <input type="password" id="inputPassword" class="form-control input-lg" placeholder="パスワード" name="password" required="">
+                        <div class="checkbox mb-3">
+                        </div>
+                        <p class="p2"></p>
+                        <div style="text-align: center;">
+                        <button class="btn btn-outline-light btn-lg" type="submit">　　　ログイン　　　</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
-    <p class="p2"></p>
-    <div style="text-align: center;">
-    <button class="btn btn-primary" type="submit">　　　ログイン　　　</button>
-    <p class="mt-5 mb-3 text-muted">© 2017-2021</p>
-    </div>
-</form>
 </div>
 
 {% endblock content %}
+
+
+
