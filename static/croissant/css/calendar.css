@@ -1,10 +1,10 @@
-#datetime {
-    width: 40%;
-}
-
 #submit {
     background: #f6ad49;
     color: #fff;
+}
+
+.calendar-height {
+    height: 87%;
 }
 
 .modal {
@@ -22,9 +22,12 @@
   border: 1px solid #ddd;
 }
 
-body {
-  color: #696969;
-  height: 1300px;
+.popup-box {
+    border: 5px dotted #f6ad49;
+}
+
+.radio-text {
+    font-size: 20px;
 }
 
 // fullcalendarのCSS

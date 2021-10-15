@@ -51,6 +51,8 @@
 
                   return day + ' ' + week;
                 },
+<!--スロットラベルフォーマット-->
+                slotLabelFormat: {hour: 'numeric', minute: 'numeric'},
               },
           },
             locale: 'ja',// 日本語
@@ -67,8 +69,7 @@
             expandRows: true,// pcなどで表示する縦幅を変えるとそれに対応して時間幅も合わせてくれる設定
             stickyHeaderDates: false,// スクロールした際に日付が一番上に残ってくれる設定
             selectable: true,// ドラッグで選択可能
-<!--            eventContent: ' ',// イベント内容を消す-->
-            contentHeight: '800px',// 要設定
+            height: '100%',// 要設定
 <!--オリジナルボタンの作成-->
             customButtons: {
 <!--ログイン画面へのボタン-->
@@ -85,7 +86,10 @@
                 center: 'title',
                 right: 'login'
             },
-
+<!--ボタンの名前設定-->
+            buttonText: {
+                today: '今日',
+            },
 <!--カレンダー選択時のアクション-->
             select: function (arg) {
                 document.getElementById('start_at').value=arg.startStr.substr(0,19);
@@ -109,7 +113,7 @@
                 },
                 {
                     events: requester_events,
-                    color: 'red',
+                    color: '#CBA4C9',
                     display: 'background',
                 },
             ]
@@ -166,7 +170,9 @@
 
 {% block content %}
 <!--カレンダー表示-->
-<div id="calendar"></div>
+<div class="calendar-height">
+    <div id="calendar"></div>
+</div>
 
 <!--ポップアップ表示-->
 <div id="mask" class="hidden"></div>
