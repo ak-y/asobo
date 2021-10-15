@@ -23,6 +23,8 @@
                         {% endif %}
                         <label for="inputEmail" class="visually-hidden">ユーザー名</label>
                         <input type="text" id="inputEmail" class="form-control input-lg" placeholder="ユーザー名" name="username" required="" autofocus="">
+                        <label  class="visually-hidden">メールアドレス</label>
+                        <input type="text"  class="form-control input-lg" placeholder="メールアドレス"  required="" autofocus="">
                         <p class="p1"></p>
                         <label for="inputPassword" class="visually-hidden">パスワード</label>
                         <input type="password" id="inputPassword" class="form-control input-lg" placeholder="パスワード" name="password" required="">
@@ -31,6 +33,13 @@
                         <p class="p2"></p>
                         <div style="text-align: center;">
                         <button class="btn btn-outline-light btn-lg" type="submit">　　　ログイン　　　</button>
+                            <br>
+                            <br>
+                            <br>
+                        <h6 class="text-center">アカウント登録がまだの方は</h6>
+                        <p class="text-center">
+                            <a class="btn-flat-dashed-border" href="{% url 'account_signup' %}">こちら</a>
+                        </p>
                         </div>
                     </form>
                 </div>
@@ -40,6 +49,4 @@
 </div>
 
 {% endblock content %}
-
-
 
