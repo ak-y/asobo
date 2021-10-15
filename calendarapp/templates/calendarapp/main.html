@@ -33,9 +33,9 @@
         var calendar = new FullCalendar.Calendar(calendarEl, {
 <!--カレンダー表示の詳細設定-->
           views: {
+
 <!--表示-->
               timeGridWeek: {
-<!--                eventContent: ' ',// イベント内容を消す-->
 <!--タイトルのフォーマット-->
                 titleFormat: function (date) {
                   const startMonth = date.start.month + 1;
@@ -54,6 +54,17 @@
 
                   return day + ' ' + week;
                 },
+<!--イベントのフォーマット-->
+                eventContent: function (info) {
+                    console.log(info.event.groupId);
+                    if (!info.event.id){
+                        return info.event.title;
+                    } else {
+                        return info.event.title + " / " + info.event.extendedProps.requester_name;
+                    }
+                },
+<!--スロットラベルフォーマット-->
+                slotLabelFormat: {hour: 'numeric', minute: 'numeric'},
               },
 <!--日表示-->
               timeGridDay: {
@@ -75,32 +86,40 @@
 
                   return day + ' ' + week;
                 },
+<!--イベントのフォーマット-->
+                eventContent: function (info) {
+                    console.log(info.event.groupId);
+                    if (!info.event.id){
+                        return info.event.title;
+                    } else {
+                        return info.event.title + " / " + info.event.extendedProps.requester_name;
+                    }
+                },
+<!--スロットラベルフォーマット-->
+                slotLabelFormat: {hour: 'numeric', minute: 'numeric'},
               },
           },
-
             locale: 'ja',// 日本語
             firstDay: (new Date()).getDay(),// 開始日の設定
             validRange: {
                 start: new Date()
             },
-<!--            themeSystem: 'bootstrap',// テーマの設定-->
             scrollTime: '08:00',// 開始時間の設定
             timeZone: 'local',// タイムゾーン
             initialView: 'timeGridWeek',//　カレンダーの種類
-            nowIndicator: false,//　現在時刻の目印表示
+            nowIndicator: true,//　現在時刻の目印表示
             allDaySlot: true,// 終日イベント欄の表示
             expandRows: true,// pcなどで表示する縦幅を変えるとそれに対応して時間幅も合わせてくれる設定
             stickyHeaderDates: false,// スクロールした際に日付が一番上に残ってくれる設定
             slotDuration: '00:30:00',// 時間区切りの設定
             slotLabelInterval: '01:00',// 時間テキストの表示間隔
             selectable: false,// ドラッグで選択可能
-            contentHeight: '800px',// 要設定
+            height: '100%',// 要設定
 <!--オリジナルボタンの作成-->
             customButtons: {
 <!--ログアウトボタン-->
                 logout: {
                     text: 'ログアウト',
-                    backgroundColor: 'red',
                     click: function() {
                         location.href = "http://127.0.0.1:8000/signout"
                     }
@@ -143,7 +162,14 @@
             eventClick: function (info){
                 console.log(info.event.id);
                 if (info.event.id) {
+                    console.log(info.event);
+                    var name = "名前：" + info.event.extendedProps.requester_name;
+                    var title = "イベント：" + info.event.title;
+                    var message = "～メッセージ～<br>" + info.event.extendedProps.message;
                     document.getElementById('submit').value=info.event.id;
+                    document.getElementById('name').innerHTML = name;
+                    document.getElementById('title').innerHTML = title;
+                    document.getElementById('message').innerHTML = message;
                     modal.classList.remove('hidden');
                     mask.classList.remove('hidden');
                 }
@@ -163,12 +189,14 @@
 <!--グーグルカレンダーの情報取得-->
                 {
                     events: events,
-                    color: '#f6ad49',
+                    color: '#fad49e',
+                    groupId: '1',
                     textColor: '#ffffff',
                 },
                 {
                     events: requests,
-                    color: 'blue',
+                    color: '#ff7f50',
+                    groupId: '2',
                     textColor: '#ffffff',
                 },
             ],
@@ -228,7 +256,9 @@
 
 {% block content %}
 <!--カレンダー表示-->
-<div id="calendar"></div>
+<div class="calendar-height">
+    <div id="calendar"></div>
+</div>
 
 <!--ポップアップ表示-->
 <div id="mask" class="hidden"></div>
@@ -236,14 +266,19 @@
     <form method="post" class="row g-3 needs-validation" name="request" novalidate>
         {% csrf_token %}
         <h3 class="text-center">リクエスト承認</h3>
+        <div class="text-center popup-box">
+            <p id="title"></p>
+            <p id="name"></p>
+            <p id="message"></p>
+        </div>
         <div class="text-center">
             <div class="form-check form-check-inline">
                 <input class="form-check-input" type="radio" id="inlineRadio1" name="is_accepted" value="Yes" required>
-                <label class="form-check-label" for="inlineRadio1">承認</label>
+                <label class="form-check-label radio-text" for="inlineRadio1">承認</label>
             </div>
             <div class="form-check form-check-inline">
                 <input class="form-check-input" type="radio" id="inlineRadio2" name="is_accepted" value="No" required>
-                <label class="form-check-label" for="inlineRadio2">未承認</label>
+                <label class="form-check-label radio-text" for="inlineRadio2" >未承認</label>
             </div>
             <div class="invalid-feedback">
                 承認か未承認を選んでください。
