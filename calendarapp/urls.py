@@ -10,6 +10,6 @@ urlpatterns = [
     path('request', views.request, name='request'),
     path('signout', views.signout, name='signout'),
     path('requester_main/<int:user_id>', views.requester_main, name='requester_main'),
-    path('authorize/<str:temp>', views.authorize, name='authorize'),
-    path('oauth2callback/<str:temp>', views.oauth2callback, name='oauth2callback'),
+    path('authorize', views.authorize, name='authorize'),
+    path('oauth2callback', views.oauth2callback, name='oauth2callback'),
 ]
