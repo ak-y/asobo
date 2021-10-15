@@ -25,6 +25,9 @@
                         <label for="inputEmail" class="visually-hidden">ユーザー名</label>
                         <input type="text" id="inputEmail" class="form-control input-lg" placeholder="ユーザー名" name="username" required=""
                                autofocus="">
+                        <label  class="visually-hidden">メールアドレス</label>
+                        <input type="text" id="inputEmail" class="form-control input-lg" placeholder="メールアドレス" name="username" required=""
+                               autofocus="">
                         <p class="p1"></p>
                         <label for="inputPassword" class="visually-hidden">パスワード</label>
                         <input type="password" id="inputPassword" class="form-control input-lg" placeholder="パスワード" name="password" required="">
@@ -33,6 +36,11 @@
                         <p class="p2"></p>
                         <div style="text-align: center;">
                         <button class="btn btn-outline-light btn-lg" type="submit">　　アカウント登録　　</button>
+                        <br><br>
+                        <h6 class="text-center">アカウントをお持ちの方は</h6>
+                        <p class="text-center">
+                            <a class="btn-flat-dashed-border" href="{% url 'account_login' %}">こちら</a>
+                        </p>
                         </div>
                     </form>
                 </div>
