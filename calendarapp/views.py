@@ -5,25 +5,22 @@ from django.db import IntegrityError
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail
+import datetime
+import json
 
 # for oauth
 import google.oauth2.credentials
 import google_auth_oauthlib.flow
 import googleapiclient.discovery
-
 CLIENT_SECRETS_FILE = "client_secret.json"
 SCOPES = ['https://www.googleapis.com/auth/calendar']
 API_SERVICE_NAME = 'calendar'
 API_VERSION = 'v3'
-
 # for "InsecureTransportError ("OAuth 2 MUST utilize https")"
 # (https://stackoverflow.com/questions/27785375/testing-flask-oauthlib-locally-without-https/27785830)
 import os
-
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 
-import datetime
-import json
 
 
 def index(request):
@@ -157,8 +154,18 @@ def main(request):
 def request(request):
     user = request.user
     requests = Request.objects.filter(user=user, is_accepted=None)
+    request_list = list()
+    for a_request in requests:
+        request_info = dict()
+        request_info['requester_name'] = a_request.requester_name
+        request_info['title'] = a_request.title
+        request_info['start'] = a_request.start_at.strftime('%m月%d日%H:%M')
+        request_info['end'] = a_request.end_at.strftime('%m月%d日%H:%M')
+        request_info['message'] = a_request.message
+        request_info['created_at'] = a_request.created_at.strftime('%m月%d日%H:%M')
+        request_list.append(request_info)
     return render(request, 'calendarapp/request.html', {
-        'requests': requests
+        'request_list': request_list
     })
 
 
