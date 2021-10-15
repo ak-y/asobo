@@ -163,7 +163,7 @@
                 console.log(info.event.id);
                 if (info.event.id) {
                     console.log(info.event);
-                    var name = "名前：" + info.event.extendedProps.requester_name;
+                    var name = "From：" + info.event.extendedProps.requester_name;
                     var title = "イベント：" + info.event.title;
                     var message = "～メッセージ～<br>" + info.event.extendedProps.message;
                     document.getElementById('submit').value=info.event.id;
