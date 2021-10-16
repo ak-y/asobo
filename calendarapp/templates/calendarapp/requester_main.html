@@ -76,7 +76,13 @@
                 login: {
                     text: 'ログイン',
                     click: function() {
-                        location.href = "http://127.0.0.1:8000/calendar/signin"
+                        location.href = "http://127.0.0.1:8000/signin"
+                        }
+                },
+                calendar: {
+                    text: '連携',
+                    click: function() {
+                        location.href = "http://127.0.0.1:8000/authorize_requester"
                         }
                 },
             },
@@ -84,7 +90,7 @@
             headerToolbar: {
                 left: 'prev,next today',
                 center: 'title',
-                right: 'login'
+                right: 'calendar login'
             },
 <!--ボタンの名前設定-->
             buttonText: {
