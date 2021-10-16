@@ -22,8 +22,11 @@
                         {% if error %}
                         {{ error }}
                         {% endif %}
-                        <label for="inputEmail" class="visually-hidden">ユーザー名</label>
-                        <input type="text" id="inputEmail" class="form-control input-lg" placeholder="ユーザー名" name="username" required=""
+                        <label for="name" class="visually-hidden">ユーザー名</label>
+                        <input type="text" id="name" class="form-control input-lg" placeholder="ユーザー名" name="username" required=""
+                               autofocus="">
+                        <label  for="inputEmail" class="visually-hidden">メールアドレス</label>
+                        <input type="email" id="inputEmail" class="form-control input-lg" placeholder="メールアドレス" name="email" required=""
                                autofocus="">
                         <p class="p1"></p>
                         <label for="inputPassword" class="visually-hidden">パスワード</label>
@@ -32,7 +35,12 @@
                         </div>
                         <p class="p2"></p>
                         <div style="text-align: center;">
-                            <button class="btn btn-outline-light btn-lg" type="submit">　　アカウント登録　　</button>
+                        <button class="btn btn-outline-light btn-lg" type="submit">　　アカウント登録　　</button>
+                        <br><br>
+                        <h6 class="text-center white">アカウントをお持ちの方は</h6>
+                        <p class="text-center">
+                            <a class="btn-flat-dashed-border" href="{% url 'signin' %}">こちら</a>
+                        </p>
                         </div>
                     </form>
                 </div>
