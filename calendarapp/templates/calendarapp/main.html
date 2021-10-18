@@ -56,10 +56,7 @@
                 },
 <!--イベントのフォーマット-->
                 eventContent: function (info) {
-                    console.log(info.event.groupId);
-                    if (!info.event.id){
-                        return info.event.title;
-                    } else {
+                    if (info.event.id){
                         return info.event.title + " / " + info.event.extendedProps.requester_name;
                     }
                 },
@@ -89,9 +86,7 @@
 <!--イベントのフォーマット-->
                 eventContent: function (info) {
                     console.log(info.event.groupId);
-                    if (!info.event.id){
-                        return info.event.title;
-                    } else {
+                    if (info.event.id){
                         return info.event.title + " / " + info.event.extendedProps.requester_name;
                     }
                 },
@@ -189,15 +184,15 @@
 <!--グーグルカレンダーの情報取得-->
                 {
                     events: events,
-                    color: '#F8C277',
+                    color: '#f6ad49',
                     groupId: '1',
-                    textColor: '#ffffff',
+                    display: 'background',
                 },
                 {
                     events: requests,
                     color: '#ff7f50',
                     groupId: '2',
-                    textColor: '#ffffff',
+                    display: 'background',
                 },
             ],
         });

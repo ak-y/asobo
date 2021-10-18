@@ -23,7 +23,7 @@
 <!--views.pyからactorのeventデータ取得-->
         var events = {{ event_list|safe }};
 <!--requesterのeventデータ取得-->
-        var requester_events = {{requester_event_list|safe }};
+        var requester_events = {{ requester_event_list|safe }};
 
         var calendarEl = document.getElementById('calendar');
 
@@ -60,7 +60,6 @@
             validRange: {
                 start: new Date()
             },
-<!--            themeSystem: 'bootstrap',// テーマの設定-->
             scrollTime: '08:00',// 開始時間の設定
             timeZone: 'local',// タイムゾーン
             initialView: 'timeGridWeek',// カレンダーの種類
@@ -77,14 +76,21 @@
                     text: 'ログイン',
                     click: function() {
                         location.href = "http://127.0.0.1:8000/calendar/signin"
-                        }
+                    }
                 },
+                calendar: {
+                    text: '連携',
+                    click: function() {
+                        location.href = "http://127.0.0.1:8000/calendar/authorize_requester"
+                    }
+                },
+
             },
 <!--ツールバーのボタン設定-->
             headerToolbar: {
                 left: 'prev,next today',
                 center: 'title',
-                right: 'login'
+                right: 'calendar login'
             },
 <!--ボタンの名前設定-->
             buttonText: {
