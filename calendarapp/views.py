@@ -170,29 +170,28 @@ def requester_main(request, user_id):
         mail_address = 'croissant.calendar@gmail.com'  # user.email
         email(requester_name, message, mail_address)
 
+        # request.session.clear()
+
         return redirect('requester_main', user_id=user.id)
     else:
-        request.session['user_id'] = user.id
-        if 'credentials' not in request.session:  # requesterのカレンダー認証
-            request.session['temp'] = 'temp'
-            return redirect('authorize')
+        request.session['user_id'] = user.id  # requesterがGoogleカレンダーと連携した後のコールバックで使う
 
         # 時間取得
         dt_now_iso, dt_30d_later_iso = get_datetime()
 
-        # 以下でrequesterの予定を取ってくる
-        requester_credentials_dict = request.session['credentials']
-        requester_event_list = build_service_get_event_list(requester_credentials_dict, dt_now_iso, dt_30d_later_iso)
-
         # 以下でadminの予定を取ってくる
         credentials_dict = json.loads(Calendar.objects.get(user=user).credentials)
         event_list = build_service_get_event_list(credentials_dict, dt_now_iso, dt_30d_later_iso)
+        requester_event_list = list()
 
         for event in event_list:
             if event['calendar_id'] != 'ja.japanese#holiday@group.v.calendar.google.com':
                 event['title'] = '予定あり'
 
-        request.session.clear()
+        # requesterがGoogleカレンダーと連携していれば、予定を取ってくる
+        if 'credentials' in request.session:
+            requester_credentials_dict = request.session['credentials']
+            requester_event_list = build_service_get_event_list(requester_credentials_dict, dt_now_iso, dt_30d_later_iso)
 
         return render(request, 'calendarapp/requester_main.html', {
             'event_list': event_list,
@@ -291,6 +290,11 @@ def build_service_get_event_list(credentials_dict, dt_now_iso, dt_30d_later_iso)
     calendar_id_list = get_calendar_id_list(service)
     event_list = get_event_list(calendar_id_list,service, dt_now_iso, dt_30d_later_iso)
     return event_list
+
+
+def authorize_requester(request):
+    request.session['temp'] = 'temp'
+    return redirect('authorize')
 
 
 def authorize(request):
