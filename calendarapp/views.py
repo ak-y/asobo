@@ -7,6 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail
 import datetime
 import json
+from cryptography.fernet import Fernet
 
 # for oauth
 import google.oauth2.credentials
@@ -20,6 +21,10 @@ API_VERSION = 'v3'
 # (https://stackoverflow.com/questions/27785375/testing-flask-oauthlib-locally-without-https/27785830)
 import os
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
+
+# user_idを暗号化するためのキー
+key = Fernet.generate_key()
+f = Fernet(key)
 
 
 
@@ -118,6 +123,10 @@ def main(request):
             request_info['message'] = a_request.message
             request_list.append(request_info)
 
+        # URL共有用にuser_idを暗号化
+        target = str(user.id).encode()
+        crypted_id = f.encrypt(target).decode()  # URLに含めるためにstringに変換
+
         # UPDATE database?
         # Save credentials back to session in case access token was refreshed.
         # request.session['credentials'] = credentials_to_dict(credentials)
@@ -125,7 +134,7 @@ def main(request):
         return render(request, 'calendarapp/main.html', {
             'event_list': event_list,
             'request_list': request_list,
-            'user_id': user.id,  # URL共有用
+            'crypted_id': crypted_id,
         })
 
 
@@ -153,7 +162,8 @@ def signout(request):
     return redirect('signin')
 
 
-def requester_main(request, user_id):
+def requester_main(request, crypted_id):
+    user_id = f.decrypt(crypted_id.encode()).decode()
     user = User.objects.get(pk=user_id)
     if request.method == 'POST':
         # DBへ保存
@@ -172,9 +182,9 @@ def requester_main(request, user_id):
 
         # request.session.clear()
 
-        return redirect('requester_main', user_id=user.id)
+        return redirect('requester_main', crypted_id=crypted_id)
     else:
-        request.session['user_id'] = user.id  # requesterがGoogleカレンダーと連携した後のコールバックで使う
+        request.session['crypted_id'] = crypted_id  # requesterがGoogleカレンダーと連携した後のコールバックで使う
 
         # 時間取得
         dt_now_iso, dt_30d_later_iso = get_datetime()
@@ -332,7 +342,7 @@ def oauth2callback(request):
     credentials = credentials_to_dict(credentials)
     if 'temp' in request.session:  # Store credentials in the session.
         request.session['credentials'] = credentials
-        return redirect('requester_main', user_id=request.session['user_id'])
+        return redirect('requester_main', crypted_id=request.session['crypted_id'])
     else:  # Store credentials in the database.
         credentials = json.dumps(credentials)
         user = request.user
