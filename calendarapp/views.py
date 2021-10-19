@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
-from .models import Request, Calendar
+from .models import Request, Calendar, Todolist
 from django.db import IntegrityError
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -157,6 +157,20 @@ def request(request):
     })
 
 
+@login_required
+def todolist(request):
+    user = request.user
+    if request.method =='POST':
+        title = request.POST['title']
+        url = request.POST['url']
+        Todolist.objects.create(user=user, title=title, url=url)
+    else:
+        todo_list = Todolist.objects.filter(user=user)
+        return render(request, 'calendarapp/todolist.html', {
+            'todo_list': todo_list
+        })
+
+
 def signout(request):
     logout(request)
     return redirect('signin')
@@ -203,9 +217,13 @@ def requester_main(request, crypted_id):
             requester_credentials_dict = request.session['credentials']
             requester_event_list = build_service_get_event_list(requester_credentials_dict, dt_now_iso, dt_30d_later_iso)
 
+        # やりたいことリスト
+        todo_list = list(Todolist.objects.filter(user=user).values())
+
         return render(request, 'calendarapp/requester_main.html', {
             'event_list': event_list,
             'requester_event_list': requester_event_list,
+            'todo_list': todo_list
         })
 
 
