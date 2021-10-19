@@ -20,8 +20,8 @@
     <div style="text-align: center;">
         <h1><i class="far fa-comment-dots"> </i> リクエスト一覧</h1>
     </div>
-    <a href="{{ request.META.HTTP_REFERER }}" class="back"><i class="fas fa-arrow-left fa-2x"></i></a>
     <div id="request-list">
+        <a href="{{ request.META.HTTP_REFERER }}" class="back"><i class="fas fa-arrow-left fa-2x"></i></a>
         {% for request in request_list %}
         <div class="card mb-3 request-card">
     <!--        <a href="#" class="list-group-item list-group-item-action">-->
