@@ -20,3 +20,12 @@ class Request(models.Model):
 class Calendar(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     credentials = models.JSONField()
+
+
+class Todolist(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    title = models.CharField(max_length=15)
+    url = models.CharField(max_length=100, blank=True)
+
+    def __str__(self):
+        return self.title

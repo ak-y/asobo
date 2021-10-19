@@ -1,0 +1,29 @@
+{% extends 'calendarapp/base.html' %}
+{% load static %}
+
+{% block header %}
+    <a href="{{'main'}}"><img src="{% static 'croissant/image/logo.png' %}" alt="ロゴ" class="logo_s"></a>
+    <link rel='stylesheet' type="text/css" href="{% static 'croissant/css/request.css' %}">
+    <title>やりたいことリスト</title>
+{% endblock header %}
+
+{% block content %}
+    <div style="text-align: center;">
+        <h1>やりたいことリスト</h1>
+    </div>
+    <a href="{{ request.META.HTTP_REFERER }}">戻るアイコン</a>
+    <p class="p1"></p>
+    <div style="text-align: center;">
+        {% for todo in todo_list %}
+            <div class="alert alert-warning" role="alert">
+                {% if todo.url %}
+                    {{ todo.title }}<a href="{{ todo.url }}" target="_blank" rel="noopener noreferrer">ここにリンクのアイコン入れる</a>
+                {% else %}
+                    {{ todo.title }}
+                {% endif %}
+            </div>
+        {% empty %}
+            <h1>やりたいことはありません</h1>
+        {% endfor %}
+    </div>
+{% endblock content %}
