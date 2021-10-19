@@ -20,7 +20,7 @@
     <div style="text-align: center;">
         <h1>リクエスト一覧</h1>
     </div>
-    <a href="{{ request.META.HTTP_REFERER }}"><i class="fas fa-arrow-left"></i></a>
+    <a href="{{ request.META.HTTP_REFERER }}" class="back"><i class="fas fa-arrow-left fa-2x"></i></a>
     <div id="request-list">
         {% for request in request_list %}
         <div class="card mb-3 request-card">
