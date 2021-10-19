@@ -22,10 +22,10 @@
 <!--views.pyからeventデータ取得-->
         var events = {{ event_list|safe }};
         var requests = {{ request_list|safe }};
-        var user_id = {{ user_id|safe }};
+        var crypted_id = "{{ crypted_id|safe }}";
 
 <!--URLの作成-->
-        var url = new String("http://127.0.0.1:8000/requester_main/" + user_id);
+        var url = new String("http://127.0.0.1:8000/requester_main/" + crypted_id);
 
         var calendarEl = document.getElementById('calendar');
 
