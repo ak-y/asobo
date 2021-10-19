@@ -7,6 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail
 import datetime
 import json
+from cryptography.fernet import Fernet
 
 # for oauth
 import google.oauth2.credentials
@@ -20,6 +21,10 @@ API_VERSION = 'v3'
 # (https://stackoverflow.com/questions/27785375/testing-flask-oauthlib-locally-without-https/27785830)
 import os
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
+
+# user_idを暗号化するためのキー
+key = Fernet.generate_key()
+f = Fernet(key)
 
 
 
@@ -118,6 +123,10 @@ def main(request):
             request_info['message'] = a_request.message
             request_list.append(request_info)
 
+        # URL共有用にuser_idを暗号化
+        target = str(user.id).encode()
+        crypted_id = f.encrypt(target).decode()  # URLに含めるためにstringに変換
+
         # UPDATE database?
         # Save credentials back to session in case access token was refreshed.
         # request.session['credentials'] = credentials_to_dict(credentials)
@@ -125,7 +134,7 @@ def main(request):
         return render(request, 'calendarapp/main.html', {
             'event_list': event_list,
             'request_list': request_list,
-            'user_id': user.id,  # URL共有用
+            'crypted_id': crypted_id,
         })
 
 
@@ -153,7 +162,8 @@ def signout(request):
     return redirect('signin')
 
 
-def requester_main(request, user_id):
+def requester_main(request, crypted_id):
+    user_id = f.decrypt(crypted_id.encode()).decode()
     user = User.objects.get(pk=user_id)
     if request.method == 'POST':
         # DBへ保存
@@ -170,29 +180,28 @@ def requester_main(request, user_id):
         mail_address = 'croissant.calendar@gmail.com'  # user.email
         email(requester_name, message, mail_address)
 
-        return redirect('requester_main', user_id=user.id)
+        # request.session.clear()
+
+        return redirect('requester_main', crypted_id=crypted_id)
     else:
-        request.session['user_id'] = user.id
-        if 'credentials' not in request.session:  # requesterのカレンダー認証
-            request.session['temp'] = 'temp'
-            return redirect('authorize')
+        request.session['crypted_id'] = crypted_id  # requesterがGoogleカレンダーと連携した後のコールバックで使う
 
         # 時間取得
         dt_now_iso, dt_30d_later_iso = get_datetime()
 
-        # 以下でrequesterの予定を取ってくる
-        requester_credentials_dict = request.session['credentials']
-        requester_event_list = build_service_get_event_list(requester_credentials_dict, dt_now_iso, dt_30d_later_iso)
-
         # 以下でadminの予定を取ってくる
         credentials_dict = json.loads(Calendar.objects.get(user=user).credentials)
         event_list = build_service_get_event_list(credentials_dict, dt_now_iso, dt_30d_later_iso)
+        requester_event_list = list()
 
         for event in event_list:
             if event['calendar_id'] != 'ja.japanese#holiday@group.v.calendar.google.com':
                 event['title'] = '予定あり'
 
-        request.session.clear()
+        # requesterがGoogleカレンダーと連携していれば、予定を取ってくる
+        if 'credentials' in request.session:
+            requester_credentials_dict = request.session['credentials']
+            requester_event_list = build_service_get_event_list(requester_credentials_dict, dt_now_iso, dt_30d_later_iso)
 
         return render(request, 'calendarapp/requester_main.html', {
             'event_list': event_list,
@@ -293,6 +302,11 @@ def build_service_get_event_list(credentials_dict, dt_now_iso, dt_30d_later_iso)
     return event_list
 
 
+def authorize_requester(request):
+    request.session['temp'] = 'temp'
+    return redirect('authorize')
+
+
 def authorize(request):
     # Create flow instance to manage the OAuth 2.0 Authorization Grant Flow steps.
     flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
@@ -328,7 +342,7 @@ def oauth2callback(request):
     credentials = credentials_to_dict(credentials)
     if 'temp' in request.session:  # Store credentials in the session.
         request.session['credentials'] = credentials
-        return redirect('requester_main', user_id=request.session['user_id'])
+        return redirect('requester_main', crypted_id=request.session['crypted_id'])
     else:  # Store credentials in the database.
         credentials = json.dumps(credentials)
         user = request.user
