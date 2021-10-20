@@ -121,14 +121,14 @@
                 logout: {
                     text: 'ログアウト',
                     click: function() {
-                        location.href = "http://127.0.0.1:8000/signout"
+                        window.location.href = "{% url 'accounts:logout' %}"
                     }
                 },
 <!--リクエストボタン-->
                 request: {
                     text: '一覧',
                     click: function() {
-                        location.href = "http://127.0.0.1:8000/request"
+                        window.location.href = "{% url 'request' %}"
                     }
                 },
 <!--シェアボタン-->

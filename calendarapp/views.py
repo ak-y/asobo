@@ -143,9 +143,9 @@ def request(request):
     })
 
 
-def signout(request):
+def logout(request):
     logout(request)
-    return redirect('signin')
+    return redirect('login')
 
 
 def requester_main(request, crypted_id):

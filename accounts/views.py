@@ -36,5 +36,5 @@ def login(request):
             login(request, user)
             return redirect('main')
         else:
-            return redirect('signin')
+            return redirect('login')
     return render(request, 'calendarapp/signin.html')
