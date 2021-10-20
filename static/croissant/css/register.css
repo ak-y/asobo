@@ -1,5 +1,7 @@
 img{
-    margin-top: 50px;
+    /*margin-top: 50px;*/
+/*    without h3*/
+    margin-top: 80px;
 }
 
 .logo_login{
@@ -11,7 +13,10 @@ h3{
 }
 
 .form-size{
-    margin-left: 65px;
+    /*margin-left: 65px;*/
+    margin-left: 45px;
+/*    without h3*/
+    margin-top: 45px;
 
 }
 
@@ -48,10 +53,13 @@ button{
 
 
 .input-group-text{
-    background-color:orange;
-    color:white;
+    /*background-color:orange;*/
+    /*color:white;*/
+    background-color:white;
+    color: orange;
     width:60px;
-    border-color: orange;
+    /*border-color: orange;*/
+    border-color: white;
     overflow: hidden;
 
 }
@@ -60,6 +68,11 @@ button{
     left: 10px;
     color: #484848;
  }
+
+.lead{
+    margin-top: 20px;
+}
+
 
 
 

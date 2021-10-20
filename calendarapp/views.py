@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-# from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.conf import settings
 from .models import Request, Calendar
 from django.db import IntegrityError
@@ -150,7 +150,7 @@ def logout(request):
 
 def requester_main(request, crypted_id):
     user_id = f.decrypt(crypted_id.encode()).decode()
-    user = settings.AUTH_USER_MODEL.objects.get(pk=user_id)
+    user = get_user_model().objects.get(pk=user_id)
     if request.method == 'POST':
         # DBへ保存
         requester_name = request.POST['requester_name']

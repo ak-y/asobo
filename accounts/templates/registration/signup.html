@@ -14,7 +14,7 @@
 {% block content %}
 <form action="" method="POST">
     {{ form.non_field_errors }}
-    <h3 class="text-center">ユーザー登録</h3>
+<!--    <h3 class="text-center">ユーザー登録</h3>-->
     <div class ="form-size">
         <div class="field input-group">
             <span class="input-group-text" id="basic-addon1">
@@ -48,7 +48,7 @@
             <button type="submit" class="btn btn-success btn-lg"><i class="fab fa-envira"></i>  TimeTreeと連携</button>
 
         </div>
-        <div class="text-center">
+        <div class="text-center lead">
             <h6>アカウント登録がお済みの方は</h6>
             <a class="btn-flat-dashed-border" href="{% url 'accounts:login' %}">こちら</a>
         </div>
