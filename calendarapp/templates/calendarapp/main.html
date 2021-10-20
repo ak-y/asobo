@@ -155,9 +155,9 @@
                 console.log(info.event.id);
                 if (info.event.id) {
                     console.log(info.event);
-                    var name = "From：" + info.event.extendedProps.requester_name;
-                    var title = "イベント：" + info.event.title;
-                    var message = "～メッセージ～<br>" + info.event.extendedProps.message;
+                    var name = "【差出人】<br>" + info.event.extendedProps.requester_name;
+                    var title = "【イベント】<br>" + info.event.title;
+                    var message = "【メッセージ】<br>" + info.event.extendedProps.message;
                     document.getElementById('submit').value=info.event.id;
                     document.getElementById('name').innerHTML = name;
                     document.getElementById('title').innerHTML = title;
@@ -276,10 +276,10 @@
                 承認か未承認を選んでください。
             </div>
         </div>
-        <label for="exampleFormControlTextarea1" class="form-label"><i class="fas fa-comment"></i></label>
+        <i class="fas fa-comment"></i>
         <textarea class="form-control" id="exampleFormControlTextarea1" name="message" rows="3"
                   placeholder="メッセージ(任意)&#13;OK！じゃあ○○集合ね！/ごめん！その日は厳しい…"></textarea>
-        <button type=submit id="submit" class="btn btn-primary" name="id">送信</button>
+        <button type=submit id="submit" class="btn btn-primary" name="id"><i class="fas fa-paper-plane"></i> 送信</button>
     </form>
 </section>
 {% endblock content %}
