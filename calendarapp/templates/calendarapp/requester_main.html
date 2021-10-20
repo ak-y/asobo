@@ -14,8 +14,6 @@
 <link href='https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.1/css/all.css' rel='stylesheet'>
 <!-- ポップアップ表示のライブラリSweetAlert -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
-<!--FontAwesome-->
-<link href="https://use.fontawesome.com/releases/v5.0.8/css/all.css" rel="stylesheet">
 
 <script>
 
@@ -23,7 +21,7 @@
 <!--views.pyからactorのeventデータ取得-->
         var events = {{ event_list|safe }};
 <!--requesterのeventデータ取得-->
-        var requester_events = {{requester_event_list|safe }};
+        var requester_events = {{ requester_event_list|safe }};
 
         var calendarEl = document.getElementById('calendar');
 
@@ -60,7 +58,6 @@
             validRange: {
                 start: new Date()
             },
-<!--            themeSystem: 'bootstrap',// テーマの設定-->
             scrollTime: '08:00',// 開始時間の設定
             timeZone: 'local',// タイムゾーン
             initialView: 'timeGridWeek',// カレンダーの種類
@@ -77,7 +74,7 @@
                     text: 'ログイン',
                     click: function() {
                         location.href = "http://127.0.0.1:8000/signin"
-                        }
+                    }
                 },
                 calendar: {
                     text: '連携',
@@ -186,20 +183,20 @@
     <form method="post" class="row g-1 needs-validation" name="request" novalidate>
         {% csrf_token %}
         <h3 class="text-center">リクエスト申請</h3>
-        <label class="form-label" for="name">名前</label>
-        <input type="text" class="form-control" id="name" name="requester_name" required>
-        <label class="form-label" for="exampleInputEmail">Email</label>
-        <input type="email" class="form-control" id="exampleInputEmail" name="requester_mail_address" required>
-        <label class="form-label" for="title">タイトル</label>
-        <input type="text" class="form-control" id="title" name="title" required>
-        <label class="form-label" for="start_at">開始</label>
+        <label class="form-label" for="name"><i class="fas fa-user"></i></label>
+        <input type="text" class="form-control" id="name" name="requester_name" placeholder="名前" required>
+        <label class="form-label" for="exampleInputEmail"><i class="fas fa-envelope"></i></label>
+        <input type="email" class="form-control" id="exampleInputEmail" name="requester_mail_address" placeholder="メールアドレス" required>
+        <label class="form-label" for="title"><i class="fas fa-edit"></i></label>
+        <input type="text" class="form-control" id="title" name="title" placeholder="タイトル (例)焼肉" required>
+        <label class="form-label" for="start_at"><i class="fas fa-sun"></i>開始</label>
         <input type="datetime-local" class="form-control" id="start_at" name="start_at" required>
-        <label class="form-label" for="end_at">終了</label>
+        <label class="form-label" for="end_at"><i class="fas fa-moon"></i>終了</label>
         <input type="datetime-local" class="form-control" id="end_at" name="end_at" required>
-        <label class="form-label" for="exampleFormControlTextarea">メッセージ(任意)</label>
+        <label class="form-label" for="exampleFormControlTextarea"><i class="fas fa-comment"></i></label>
         <textarea class="form-control" id="exampleFormControlTextarea" name="message" rows="3"
-                  placeholder="この日に○○行きたいな！"></textarea>
-        <button type=submit class="btn btn-primary" id="submit">申請</button>
+                  placeholder="メッセージ(任意)&#13;この日に○○行きたいな！"></textarea>
+        <button type=submit class="btn btn-primary" id="submit"><i class="fas fa-paper-plane"></i>申請</button>
     </form>
 </section>
 {% endblock content %}
