@@ -14,8 +14,6 @@
 <link href='https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.1/css/all.css' rel='stylesheet'>
 <!-- ポップアップ表示のライブラリSweetAlert -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
-<!--FontAwesome-->
-<link href="https://use.fontawesome.com/releases/v5.0.8/css/all.css" rel="stylesheet">
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -56,10 +54,7 @@
                 },
 <!--イベントのフォーマット-->
                 eventContent: function (info) {
-                    console.log(info.event.groupId);
-                    if (!info.event.id){
-                        return info.event.title;
-                    } else {
+                    if (info.event.id){
                         return info.event.title + " / " + info.event.extendedProps.requester_name;
                     }
                 },
@@ -88,10 +83,7 @@
                 },
 <!--イベントのフォーマット-->
                 eventContent: function (info) {
-                    console.log(info.event.groupId);
-                    if (!info.event.id){
-                        return info.event.title;
-                    } else {
+                    if (info.event.id){
                         return info.event.title + " / " + info.event.extendedProps.requester_name;
                     }
                 },
@@ -189,15 +181,15 @@
 <!--グーグルカレンダーの情報取得-->
                 {
                     events: events,
-                    color: '#F8C277',
+                    color: '#f6ad49',
                     groupId: '1',
-                    textColor: '#ffffff',
+                    display: 'background',
                 },
                 {
                     events: requests,
-                    color: '#ff7f50',
+                    color: '#CBA4C9',
                     groupId: '2',
-                    textColor: '#ffffff',
+                    display: 'background',
                 },
             ],
         });
@@ -284,9 +276,9 @@
                 承認か未承認を選んでください。
             </div>
         </div>
-        <label for="exampleFormControlTextarea1" class="form-label">メッセージ(任意)</label>
+        <label for="exampleFormControlTextarea1" class="form-label"><i class="fas fa-comment"></i></label>
         <textarea class="form-control" id="exampleFormControlTextarea1" name="message" rows="3"
-                  placeholder="OK！じゃあ○○集合ね！/ごめん！その日は厳しい…"></textarea>
+                  placeholder="メッセージ(任意)&#13;OK！じゃあ○○集合ね！/ごめん！その日は厳しい…"></textarea>
         <button type=submit id="submit" class="btn btn-primary" name="id">送信</button>
     </form>
 </section>

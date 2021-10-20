@@ -3,6 +3,24 @@ h1 {
     color: #FFF;
     background: #f6ad49;
 }
-p.p1 {
-    margin-bottom: 4em;
+
+#request-list {
+    height: 100%;
+    padding: 5px 0px 50px 0px;
+    overflow-y: scroll;
 }
+
+.request-card {
+    margin: 5px 20px 5px 20px;
+    border: 3px double #f6ad49;
+}
+
+.back {
+    color: #f6ad49;
+    padding: 20px;
+}
+.back:hover {
+    color: #f6ad49;
+
+}
+
