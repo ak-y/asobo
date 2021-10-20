@@ -1,8 +1,9 @@
 from django.db import models
-from django.contrib.auth.models import User
+# from django.contrib.auth.models import CustomUser
+from django.conf import settings
 
 class Request(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     requester_name = models.CharField(max_length=15)
     requester_mail_address = models.EmailField()
     message = models.CharField(max_length=100, blank=True)
@@ -18,5 +19,5 @@ class Request(models.Model):
 
 
 class Calendar(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     credentials = models.JSONField()

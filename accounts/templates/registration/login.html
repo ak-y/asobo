@@ -1,0 +1,42 @@
+
+{% extends 'calendarapp/base.html' %}
+{% load static %}
+
+{% block header %}
+<link rel='stylesheet' type="text/css" href="{% static 'croissant/css/logo.css' %}">
+<link rel='stylesheet' type="text/css" href="{% static 'croissant/css/button.css' %}">
+<link rel='stylesheet' type="text/css" href="{% static 'croissant/css/register.css' %}">
+<!--<link rel='stylesheet' type="text/css" href="{% static 'croissant/css/fontawesome.css' %}">-->
+<script src="https://kit.fontawesome.com/9319a33fb6.js" crossorigin="anonymous"></script>
+<a href="{{'/'}}"><img src="{% static 'croissant/image/logo.png' %}" alt="ロゴ" class="logo_b logo_login"></a>
+{% endblock header %}
+
+{% block content %}
+<form action="" method="POST">
+    {{ form.non_field_errors }}
+    <div class ="form-size">
+        <div class="field input-group">
+            <span class="input-group-text" id="basic-addon2">
+                <i class="fa fa-solid fa-envelope fa-2x"></i>
+            </span>
+            {{ form.username }}
+        </div>
+        <div class="field input-group">
+            <span class="input-group-text" id="basic-addon3">
+                <i class="fa fa-solid fa-lock fa-2x"></i>
+            </span>
+            {{ form.password }}
+        </div>
+        <div class="other-login">
+            <h6 class="text-center">アカウント登録がまだの方は</h6>
+            <p class="text-center">
+                <a class="btn-flat-dashed-border" href="{% url 'accounts:register' %}">こちら</a>
+            </p>
+        </div>
+
+    </div>
+
+{% endblock content %}
+
+
+

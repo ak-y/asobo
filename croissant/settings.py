@@ -33,7 +33,8 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'calendarapp',
-    'django.contrib.admin',
+    'accounts',
+    # 'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -56,7 +57,7 @@ ROOT_URLCONF = 'croissant.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -81,7 +82,7 @@ DATABASES = {
         # 'NAME': BASE_DIR / 'db.sqlite3',
 
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'croissant',
+        'NAME': 'croissant3',
         'USER': 'username',
         'PASSWORD': 'PASSWORD',
         'HOST': 'localhost',
@@ -134,8 +135,11 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-LOGIN_URL = '/signin'
+LOGIN_URL = '/accounts/login/'
+LOGIN_REDIRECT_URL ='/main/'
+LOGOUT_REDIRECT_URL = '/'
 
+AUTH_USER_MODEL = 'accounts.User'
 
 # for send mail
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'

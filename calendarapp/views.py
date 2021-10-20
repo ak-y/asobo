@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth.models import User
+# from django.contrib.auth.models import User
+from django.conf import settings
 from .models import Request, Calendar
 from django.db import IntegrityError
 from django.contrib.auth import authenticate, login, logout
@@ -34,7 +35,7 @@ def index(request):
 
 def register(request):
     if request.method == "POST":
-        username = request.POST['username']
+        username = request.POST['email']
         password = request.POST['password']
         try:
             User.objects.create_user(username, '', password)
