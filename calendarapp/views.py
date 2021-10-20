@@ -33,33 +33,18 @@ def index(request):
     return render(request, 'calendarapp/index.html')
 
 
-def register(request):
-    if request.method == "POST":
-        username = request.POST['email']
-        password = request.POST['password']
-        try:
-            User.objects.create_user(username, '', password)
-            user = authenticate(request, username=username, password=password)
-            login(request, user)
-            return redirect('authorize')
-        except IntegrityError:
-            return render(request, 'calendarapp/register.html', {
-                'error': 'このユーザーは既に登録されています'
-            })
-    return render(request, 'calendarapp/register.html')
 
-
-def signin(request):
-    if request.method == 'POST':
-        username = request.POST['username']
-        password = request.POST['password']
-        user = authenticate(request, username=username, password=password)
-        if user is not None:
-            login(request, user)
-            return redirect('main')
-        else:
-            return redirect('signin')
-    return render(request, 'calendarapp/signin.html')
+# def signin(request):
+#     if request.method == 'POST':
+#         username = request.POST['username']
+#         password = request.POST['password']
+#         user = authenticate(request, username=username, password=password)
+#         if user is not None:
+#             login(request, user)
+#             return redirect('main')
+#         else:
+#             return redirect('signin')
+#     return render(request, 'calendarapp/signin.html')
 
 
 @login_required
@@ -165,7 +150,7 @@ def signout(request):
 
 def requester_main(request, crypted_id):
     user_id = f.decrypt(crypted_id.encode()).decode()
-    user = User.objects.get(pk=user_id)
+    user = settings.AUTH_USER_MODEL.objects.get(pk=user_id)
     if request.method == 'POST':
         # DBへ保存
         requester_name = request.POST['requester_name']

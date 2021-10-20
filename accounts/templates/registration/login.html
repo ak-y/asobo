@@ -27,15 +27,19 @@
             </span>
             {{ form.password }}
         </div>
+        <div class="text-center">
+            <button type="submit" class="btn btn-danger btn-lg">ログイン</button>
+        </div>
         <div class="other-login">
             <h6 class="text-center">アカウント登録がまだの方は</h6>
             <p class="text-center">
+
                 <a class="btn-flat-dashed-border" href="{% url 'accounts:register' %}">こちら</a>
             </p>
         </div>
-
     </div>
-
+    {% csrf_token %}
+</form>
 {% endblock content %}
 
 

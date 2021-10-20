@@ -14,7 +14,7 @@ class SignUpView(CreateView):
             password = form.cleaned_data.get('password1')
             user = authenticate(email=email, password=password)
             login(request, user)
-            return redirect('/')
+            return redirect('authorize')
         return render(request, 'registration/signup.html', {'form': form})
 
     def get(self, request, *args, **kwargs):
@@ -26,3 +26,15 @@ class SignUpView(CreateView):
         login(self.request, user)
         self.object = user
         return HttpResponseRedirect(self.get_success_url())
+
+def login(request):
+    if request.method == 'POST':
+        email = request.POST['email']
+        password = request.POST['password']
+        user = authenticate(request, email=email, password=password)
+        if user is not None:
+            login(request, user)
+            return redirect('main')
+        else:
+            return redirect('signin')
+    return render(request, 'calendarapp/signin.html')
