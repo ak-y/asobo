@@ -20,7 +20,7 @@
                 {% if todo.url %}
                     <a href="{{ todo.url }}" target="_blank" rel="noopener noreferrer"><i class="fa fa-solid fa-link"></i></a>
                 {% endif %}
-                <a href="{% url 'delete' todo.pk %}">削除</a>
+                <a href="{% url 'delete' todo.pk %}"><i class="fa fa-solid fa-trash"></i></a>
             </div>
         {% empty %}
             <div style="text-align: center;">
