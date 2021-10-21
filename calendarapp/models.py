@@ -1,6 +1,7 @@
 from django.db import models
-# from django.contrib.auth.models import CustomUser
 from django.conf import settings
+
+
 
 class Request(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -21,3 +22,14 @@ class Request(models.Model):
 class Calendar(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     credentials = models.JSONField()
+
+
+
+class Todolist(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    title = models.CharField(max_length=15)
+    url = models.CharField(max_length=100, blank=True)
+
+    def __str__(self):
+        return self.title
+

@@ -2,29 +2,44 @@
 {% load static %}
 
 {% block header %}
-<a href="{{'main'}}"><img src="{% static 'croissant/image/logo.png' %}" alt="ロゴ" class="logo_s"></a>
-<link rel='stylesheet' type="text/css" href="{% static 'croissant/css/request.css' %}">
-<title>リクエスト一覧</title>
+    <a href="{{'main'}}"><img src="{% static 'croissant/image/logo.png' %}" alt="ロゴ" class="logo_s"></a>
+    <link rel='stylesheet' type="text/css" href="{% static 'croissant/css/request.css' %}">
+    <title>リクエスト一覧</title>
+
+<!--スクロールの実装-->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var scrollSpy = new bootstrap.ScrollSpy(document.body, {
+          target: '#navbar-example'
+        });
+    }
+</script>
 {% endblock header %}
 
 {% block content %}
-<div style="text-align: center;">
-<h1>リクエスト一覧</h1>
-</div>
-<p class="p1"></p>
-{% for request in request_list %}
-<div class="list-group">
-    <a href="#" class="list-group-item list-group-item-action">
-        <p>From：{{ request.requester_name }}</p>
-        <p>タイトル：{{ request.title }}</p>
-        <p>日時：{{ request.start }} ～ {{ request.end }}</p>
-        <p>メッセージ：{{ request.message }}</p>
-        <p>送信日時：{{ request.created_at }}</p>
-    </a>
-</div>
-{% empty %}
-<div style="text-align: center;">
-<p>リクエストはありません</p>
-</div>
-{% endfor %}
+    <div style="text-align: center;">
+        <h1><i class="far fa-comment-dots"> </i> リクエスト一覧</h1>
+    </div>
+    <div id="request-list">
+        <a href="{{ request.META.HTTP_REFERER }}" class="back"><i class="fas fa-arrow-left fa-2x"></i></a>
+        {% for request in request_list %}
+        <div class="card mb-3 request-card">
+    <!--        <a href="#" class="list-group-item list-group-item-action">-->
+            <a>
+                <div class="card-header"><i class="fas fa-user"></i> {{ request.requester_name }}</div>
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fas fa-bullhorn fa-xs"></i> {{ request.title }}</h5>
+                    <p class="card-text"><i class="fas fa-calendar-alt"></i> {{ request.start }} ～ {{ request.end }}</p>
+                    <p class="card-text"><i class="fas fa-comment"></i> {{ request.message }}</p>
+                    <p class="card-text">送信日時：{{ request.created_at }}</p>
+                </div>
+            </a>
+        </div>
+        {% empty %}
+        <div style="text-align: center;">
+            <p>リクエストはありません</p>
+        </div>
+        {% endfor %}
+    </div>
+
 {% endblock content %}
