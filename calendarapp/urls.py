@@ -7,6 +7,7 @@ urlpatterns = [
     path('main', views.main, name='main'),
     path('request', views.request, name='request'),
     path('todolist', views.todolist, name='todolist'),
+    path('delete/<int:pk>', views.delete, name='delete'),
     path('requester_main/<str:crypted_id>', views.requester_main, name='requester_main'),
     path('authorize_requester', views.authorize_requester, name='authorize_requester'),
     path('authorize', views.authorize, name='authorize'),

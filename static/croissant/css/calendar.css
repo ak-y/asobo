@@ -89,3 +89,60 @@
   display: none;
 }
 
+// ハンバーガーメニュー
+.ham {
+	position: relative;
+	width: 40px;
+	height: 40px;
+	cursor: pointer;
+	background-color: #ffa500;
+}
+.ham_line {
+	position: absolute;
+	left: 10px;
+	width: 20px;
+	height: 1px;
+	transition: all 0.3s;
+	background-color: #333333;
+}
+.ham_line1 {
+	top: 10px;
+}
+.ham_line2 {
+	top: 18px;
+}
+.ham_line3 {
+	top: 26px;
+}
+
+.clicked .ham_line1 {
+	transform: rotate(45deg);
+	top: 20px;
+}
+.clicked .ham_line2 {
+	width: 0px;
+}
+.clicked .ham_line3 {
+	transform: rotate(-45deg);
+	top: 20px;
+}
+p.p1 {
+    margin-bottom: 2em;
+}
+.menu {
+	position: fixed;
+	width: 300px;
+	height: 300px;
+	left: -400px;
+	background-color: #ffa500;
+	transition: all 0.3s;
+	z-index: 99999;
+	font-weight: bold;
+	font-size: 15pt;
+	color: #ffa500;
+	line-height: 50px
+}
+.clicked .menu {
+	left: 8px;
+}
+

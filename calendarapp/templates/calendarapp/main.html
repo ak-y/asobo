@@ -236,17 +236,36 @@
             })
       })()
 
+<!--ハンバーガーメニュー-->
+        const ham = document.getElementById('ham');
+        const menu_wrapper = document.getElementById('menu_wrapper');
+        ham.addEventListener('click', function() {
+            ham.classList.toggle('clicked');
+            menu_wrapper.classList.toggle('clicked');
+        });
 
     });
-
-
-
-
-
 </script>
+
 {% endblock header %}
 
 {% block content %}
+<!--ハンバーガーメニュー-->
+<div class="ham" id="ham">
+	<span class="ham_line ham_line1"></span>
+	<span class="ham_line ham_line2"></span>
+	<span class="ham_line ham_line3"></span>
+</div>
+<div class="menu_wrapper" id="menu_wrapper">
+	<div class="menu">
+    	<ul>
+            <p class="p1"></p>
+        	<li><a href="{% url 'todolist' %}"><i class="fas fa-clipboard-list fa-lg" ></i> やりたいことリスト</a></li>
+        	<li><a href="{% url 'request' %}"><i class="far fa-comment-dots fa-lg"> </i> リクエスト一覧</a></li>
+        	<li><a href="{% url 'accounts:logout' %}"><i class="fas fa-sign-out-alt fa-lg"></i> ログアウト</a></li>
+    	</ul>
+	</div>
+</div>
 <!--カレンダー表示-->
 <div class="calendar-height">
     <div id="calendar"></div>

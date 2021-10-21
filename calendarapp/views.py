@@ -91,6 +91,10 @@ def main(request):
         # requestsからフロントに送る情報をrequest_listに抽出、datetimeをISOに整形 (id, requester_name, message, start, end)
         request_list = list()
         for a_request in requests:
+            dt_request = a_request.end_at
+            dt_now = datetime.datetime.now(datetime.timezone.utc)
+            if dt_request < dt_now:
+                Request.objects.filter(user=user, pk=a_request.pk).delete()
             request_info = dict()
             request_info['id'] = a_request.id
             request_info['requester_name'] = a_request.requester_name
@@ -150,6 +154,14 @@ def todolist(request):
         return render(request, 'calendarapp/todolist.html', {
             'todo_list': todo_list
         })
+
+
+
+@login_required
+def delete(request, pk):
+    user = request.user
+    Todolist.objects.filter(user=user, pk=pk).delete()
+    return redirect('todolist')
 
 
 
