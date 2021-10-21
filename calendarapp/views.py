@@ -149,6 +149,7 @@ def todolist(request):
         title = request.POST['title']
         url = request.POST['url']
         Todolist.objects.create(user=user, title=title, url=url)
+        return redirect('todolist')
     else:
         todo_list = Todolist.objects.filter(user=user)
         return render(request, 'calendarapp/todolist.html', {
