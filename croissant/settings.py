@@ -82,7 +82,7 @@ DATABASES = {
         # 'NAME': BASE_DIR / 'db.sqlite3',
 
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'database',
+        'NAME': 'croissant',
         'USER': 'username',
         'PASSWORD': 'PASSWORD',
         'HOST': 'localhost',
