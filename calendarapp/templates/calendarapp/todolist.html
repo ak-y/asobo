@@ -11,19 +11,21 @@
     <div style="text-align: center;">
         <h1>やりたいことリスト</h1>
     </div>
-    <a href="{{ request.META.HTTP_REFERER }}">戻るアイコン</a>
+    <a href="{{ request.META.HTTP_REFERER }}" class="back"><i class="fas fa-arrow-left fa-2x"></i></a>
     <p class="p1"></p>
     <div style="text-align: center;">
         {% for todo in todo_list %}
             <div class="alert alert-warning" role="alert">
+                {{ todo.title }}
                 {% if todo.url %}
-                    {{ todo.title }}<a href="{{ todo.url }}" target="_blank" rel="noopener noreferrer">ここにリンクのアイコン入れる</a>
-                {% else %}
-                    {{ todo.title }}
+                    <a href="{{ todo.url }}" target="_blank" rel="noopener noreferrer"><i class="fa fa-solid fa-link"></i></a>
                 {% endif %}
+                <a href="{% url 'delete' todo.pk %}"><i class="fa fa-solid fa-trash"></i></a>
             </div>
         {% empty %}
-            <h1>やりたいことはありません</h1>
+            <div style="text-align: center;">
+                <p>やりたいことリストはありません</p>
+            </div>
         {% endfor %}
     </div>
 {% endblock content %}

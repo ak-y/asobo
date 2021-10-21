@@ -14,7 +14,7 @@ class Request(models.Model):
     title = models.CharField(max_length=15)
 
     def __str__(self):
-        return self.requester_name
+        return self.title
 
 
 class Calendar(models.Model):
