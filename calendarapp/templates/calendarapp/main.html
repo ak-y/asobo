@@ -236,17 +236,35 @@
             })
       })()
 
+<!--ハンバーガーメニュー-->
+        const ham = document.getElementById('ham');
+        const menu_wrapper = document.getElementById('menu_wrapper');
+        ham.addEventListener('click', function() {
+            ham.classList.toggle('clicked');
+            menu_wrapper.classList.toggle('clicked');
+        });
 
     });
-
-
-
-
-
 </script>
+
 {% endblock header %}
 
 {% block content %}
+<!--ハンバーガーメニュー-->
+<div class="ham" id="ham">
+	<span class="ham_line ham_line1"></span>
+	<span class="ham_line ham_line2"></span>
+	<span class="ham_line ham_line3"></span>
+</div>
+<div class="menu_wrapper" id="menu_wrapper">
+	<div class="menu">
+    	<ul>
+        	<li><a href="#1">メニュー１</a></li>
+        	<li><a href="#2">メニュー２</a></li>
+        	<li><a href="#3">メニュー３</a></li>
+    	</ul>
+	</div>
+</div>
 <!--カレンダー表示-->
 <div class="calendar-height">
     <div id="calendar"></div>
