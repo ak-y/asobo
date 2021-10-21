@@ -225,7 +225,7 @@ def email(sender_name, message, mail_address, *is_accepted):
         content = sender_name + 'さんへのリクエストが' + result + 'されました。\n\n' + sender_name + 'さんからのメッセージ：' + message
     else:  # from actor to admin
         title = sender_name + 'さんからasobo!のリクエストが送られてきました'
-        content = sender_name + 'さんからリクエストが来ています。\n\n確認する：http://127.0.0.1:8000/signin'
+        content = sender_name + 'さんからリクエストが来ています。\n\n確認する：http://127.0.0.1:8000/accounts/login/'
     send_mail(
         title,
         content,

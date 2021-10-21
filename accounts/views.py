@@ -4,6 +4,7 @@ from django.views.generic import CreateView
 from django.contrib.auth import login, authenticate
 from django.shortcuts import render, redirect
 from accounts.forms import SignUpForm
+from django.contrib.auth import login as auth_login
 
 class SignUpView(CreateView):
     def post(self, request, *args, **kwargs):
@@ -13,7 +14,7 @@ class SignUpView(CreateView):
             email = form.cleaned_data.get('email')
             password = form.cleaned_data.get('password1')
             user = authenticate(email=email, password=password)
-            login(request, user)
+            auth_login(request, user)
             return redirect('authorize')
         return render(request, 'registration/signup.html', {'form': form})
 
@@ -23,7 +24,7 @@ class SignUpView(CreateView):
 
     def form_valid(self, form):
         user = form.save()
-        login(self.request, user)
+        auth_login(self.request, user)
         self.object = user
         return HttpResponseRedirect(self.get_success_url())
 
@@ -33,8 +34,8 @@ def login(request):
         password = request.POST['password']
         user = authenticate(request, email=email, password=password)
         if user is not None:
-            login(request, user)
+            auth_login(request, user)
             return redirect('main')
         else:
             return redirect('login')
-    return render(request, 'calendarapp/signin.html')
+    return render(request, 'calendarapp/login.html')
