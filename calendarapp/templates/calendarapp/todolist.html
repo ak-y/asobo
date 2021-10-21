@@ -3,7 +3,7 @@
 
 {% block header %}
     <a href="{{'main'}}"><img src="{% static 'croissant/image/logo.png' %}" alt="ロゴ" class="logo_s"></a>
-    <link rel='stylesheet' type="text/css" href="{% static 'croissant/css/request.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'croissant/css/todolist.css' %}">
     <title>やりたいことリスト</title>
 {% endblock header %}
 
@@ -14,18 +14,32 @@
     <a href="{{ request.META.HTTP_REFERER }}" class="back"><i class="fas fa-arrow-left fa-2x"></i></a>
     <p class="p1"></p>
     <div style="text-align: center;">
-        {% for todo in todo_list %}
-            <div class="alert alert-warning" role="alert">
-                {{ todo.title }}
-                {% if todo.url %}
-                    <a href="{{ todo.url }}" target="_blank" rel="noopener noreferrer"><i class="fa fa-solid fa-link"></i></a>
-                {% endif %}
-                <a href="{% url 'delete' todo.pk %}"><i class="fa fa-solid fa-trash"></i></a>
-            </div>
-        {% empty %}
-            <div style="text-align: center;">
-                <p>やりたいことリストはありません</p>
-            </div>
-        {% endfor %}
+        <div class="container">
+            {% for todo in todo_list %}
+                <div class="box25">
+                    <strong>{{ todo.title }}</strong>
+                    {% if todo.url %}
+                        <a href="{{ todo.url }}" target="_blank" rel="noopener noreferrer"><i class="fa fa-solid fa-link"></i></a>
+                    {% endif %}
+                    <a href="{% url 'delete' todo.pk %}">
+                        <p class="right-column"><i class="fa fa-solid fa-trash"></i></p>
+                    </a>
+                </div>
+                <br>
+            {% empty %}
+                <div style="text-align: center;">
+                    <p>やりたいことリストはありません</p>
+                </div>
+            {% endfor %}
+        </div>
     </div>
+
+    <form method="post">
+        {% csrf_token %}
+        リクエスト追加(仮)
+        <input type="text" name="title" placeholder="title">
+        <input type="text" name="url" placeholder="url">
+        <button type="submit" class="btn btn-primary" id="submit">add</button>
+    </form>
+
 {% endblock content %}
