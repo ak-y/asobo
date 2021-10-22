@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
+from django.conf import settings
 from .models import Request, Calendar, Todolist
 from django.db import IntegrityError
 from django.contrib.auth import authenticate, login, logout
@@ -32,33 +33,7 @@ def index(request):
     return render(request, 'calendarapp/index.html')
 
 
-def register(request):
-    if request.method == "POST":
-        username = request.POST['username']
-        password = request.POST['password']
-        try:
-            User.objects.create_user(username, '', password)
-            user = authenticate(request, username=username, password=password)
-            login(request, user)
-            return redirect('authorize')
-        except IntegrityError:
-            return render(request, 'calendarapp/register.html', {
-                'error': 'このユーザーは既に登録されています'
-            })
-    return render(request, 'calendarapp/register.html')
 
-
-def signin(request):
-    if request.method == 'POST':
-        username = request.POST['username']
-        password = request.POST['password']
-        user = authenticate(request, username=username, password=password)
-        if user is not None:
-            login(request, user)
-            return redirect('main')
-        else:
-            return redirect('signin')
-    return render(request, 'calendarapp/signin.html')
 
 
 @login_required
@@ -161,6 +136,10 @@ def request(request):
     })
 
 
+def logout(request):
+    logout(request)
+    return redirect('login')
+
 @login_required
 def todolist(request):
     user = request.user
@@ -176,6 +155,7 @@ def todolist(request):
         })
 
 
+
 @login_required
 def delete(request, pk):
     user = request.user
@@ -183,14 +163,12 @@ def delete(request, pk):
     return redirect('todolist')
 
 
-def signout(request):
-    logout(request)
-    return redirect('signin')
+
 
 
 def requester_main(request, crypted_id):
     user_id = f.decrypt(crypted_id.encode()).decode()
-    user = User.objects.get(pk=user_id)
+    user = get_user_model().objects.get(pk=user_id)
     if request.method == 'POST':
         # DBへ保存
         requester_name = request.POST['requester_name']
@@ -247,7 +225,7 @@ def email(sender_name, message, mail_address, *is_accepted):
         content = sender_name + 'さんへのリクエストが' + result + 'されました。\n\n' + sender_name + 'さんからのメッセージ：' + message
     else:  # from actor to admin
         title = sender_name + 'さんからasobo!のリクエストが送られてきました'
-        content = sender_name + 'さんからリクエストが来ています。\n\n確認する：http://127.0.0.1:8000/signin'
+        content = sender_name + 'さんからリクエストが来ています。\n\n確認する：http://127.0.0.1:8000/accounts/login/'
     send_mail(
         title,
         content,
