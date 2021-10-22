@@ -3,20 +3,23 @@
 
 {% block header %}
 <link rel='stylesheet' type="text/css" href="{% static 'croissant/css/index.css' %}">
-<img src="{% static 'croissant/image/logo_index.png' %}" alt="ロゴ" class="logo_b">
+<img src="{% static 'croissant/image/logo.png' %}" alt="ロゴ" class="logo_b">
 {% endblock header %}
 
 {% block content %}
-<p class="p1"></p>
-<div style="text-align: center;">
-    <p>
-        <a href="{% url 'accounts:register' %}" class="btn-square-pop"><i class="far fa-user"></i> アカウント登録</a>
-    </p>
-</div>
-<p class="p1"></p>
-<div style="text-align: center;">
-    <p>
-        <a href="{% url 'accounts:login' %}" class="btn-square-pop">  <i class="fas fa-sign-in-alt"></i> ログイン </a>
-    </p>
-</div>
+<p class="p2"></p>
+
+        <div style="text-align: center;">
+            <p>
+                <a href="{% url 'accounts:register' %}" class="btn-square-pop"><i class="far fa-user"></i> アカウント登録</a>
+            </p>
+    </div>
+    <p class="p1"></p>
+    <div style="text-align: center;">
+        <p>
+            <a href="{% url 'accounts:login' %}" class="btn-square-pop">  <i class="fas fa-sign-in-alt"></i> ログイン </a>
+        </p>
+    </div>
+
+
 {% endblock content %}
