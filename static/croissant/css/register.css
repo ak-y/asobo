@@ -1,3 +1,10 @@
+p.p1 {
+    margin-bottom: 2em;
+}
+.form-control {
+   /*コレ*/width: 3em;
+    /*コレ*/max-width: 100%;
+}
 img{
     /*margin-top: 50px;*/
 /*    without h3*/
