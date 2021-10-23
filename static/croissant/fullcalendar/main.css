@@ -293,7 +293,7 @@ When it's NOT activated, the fc-button classes won't even be in the DOM.
     margin-top: 1.5em;
   }
 .fc .fc-toolbar-title {
-    font-size: 20px;
+    font-size: 25px;
     font-weight: 800;
     margin: 0;
   }
