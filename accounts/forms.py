@@ -10,7 +10,7 @@ class SignUpForm(UserCreationForm):
     class Meta:
         model = User
         # ↓ username と email の順番を入れ替え
-        fields = ('email', 'username','password1', 'password2')
+        fields = ('email', 'username', 'password1', 'password2')
         widgets = {
             'email': forms.TextInput(attrs={'placeholder': 'メールアドレス'}),
             'username': forms.TextInput(attrs={'placeholder': 'ユーザー名'}),
