@@ -1,5 +1,6 @@
-.position{
-    text-align: center;
+div.field input-group{
+     margin : 0 auto;
+     width: 150;
 }
 .form-group{
   text-align: left;
