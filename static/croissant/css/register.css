@@ -5,16 +5,6 @@ p.p1 {
    /*コレ*/width: 3em;
     /*コレ*/max-width: 100%;
 }
-img{
-    /*margin-top: 50px;*/
-/*    without h3*/
-    margin-top: 80px;
-}
-
-.logo_login{
-    margin-top: 180px;
-}
-
 h3{
     margin-top: 40px;
 }
