@@ -162,3 +162,12 @@ p.p1 {
 	left: 8px;
 }
 
+.todo_list_title {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+.todo_list_box {
+    text-align: center;
+    margin: 0px 0px 0px 10px;
+}
