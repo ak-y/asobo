@@ -56,5 +56,3 @@ class UserDeleteView(LoginRequiredMixin, generic.View):
         auth_logout(self.request)
         return redirect('index')
         # return render(self.request, 'registration/delete.html')
-
-
