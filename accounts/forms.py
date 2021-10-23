@@ -37,6 +37,13 @@ class SignUpForm(UserCreationForm):
             return ValidationError("this e-mail is taken")
         return email
 
+    def __init__(self, *args, **kwargs):
+        super(SignUpForm, self).__init__(*args, **kwargs)
+        self.fields['password1'].widget = forms.TextInput(
+            attrs={'class': 'form-control', 'placeholder': 'パスワード'})
+        self.fields['password2'].widget = forms.TextInput(
+            attrs={'class': 'form-control', 'placeholder': 'パスワード(再入力)'})
+
     def save(self, commit=True):
         user = super(SignUpForm, self).save(commit=False)
         if commit:
@@ -49,3 +56,4 @@ class SignUpForm(UserCreationForm):
             attrs={'class': 'form-control', 'placeholder': 'パスワード'})
         self.fields['password2'].widget = PasswordInput(
             attrs={'class': 'form-control', 'placeholder': 'パスワード(再入力)'})
+
