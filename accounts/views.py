@@ -1,10 +1,17 @@
 from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
 
 from django.views.generic import CreateView
-from django.contrib.auth import login, authenticate
+from django.contrib.auth import  authenticate
 from django.shortcuts import render, redirect
 from accounts.forms import SignUpForm
 from django.contrib.auth import login as auth_login
+from django.contrib.auth import logout as auth_logout
+from django.contrib.auth import get_user_model
+from django.views import generic
+from django.contrib.auth.mixins import LoginRequiredMixin
+
+
+
 
 class SignUpView(CreateView):
     def post(self, request, *args, **kwargs):
@@ -38,4 +45,14 @@ def login(request):
             return redirect('main')
         else:
             return redirect('login')
-    return render(request, 'calendarapp/login.html')
+    return render(request, 'registration/login.html')
+
+
+
+class UserDeleteView(LoginRequiredMixin, generic.View):
+    def get(self, *args, **kwargs):
+        User = get_user_model()
+        User.objects.filter(email=self.request.user.email).delete()
+        auth_logout(self.request)
+        return redirect('index')
+        # return render(self.request, 'registration/delete.html')

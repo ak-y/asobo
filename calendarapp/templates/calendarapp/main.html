@@ -129,7 +129,7 @@
                     click: function() {
                         navigator.clipboard.writeText(url);
                         Swal.fire({
-                            title: url,
+<!--                            title: url,-->
                             html: '<p>クリップボードにコピーされました</p>' +
                                   '<h5>友達に共有して予定を立てよう！</h5>',
                             icon: "success",
@@ -140,9 +140,9 @@
             },
 <!--ツールバーのボタン設定-->
             headerToolbar: {
-                left: 'prev,next today timeGridWeek,timeGridDay',
+                left: 'prev,next today',
                 center: 'title',
-                right: 'share request logout'
+                right: 'share timeGridWeek,timeGridDay'
             },
 <!--ボタンの名前設定-->
             buttonText: {
@@ -259,10 +259,11 @@
 <div class="menu_wrapper" id="menu_wrapper">
 	<div class="menu">
     	<ul>
-            <p class="p1"></p>
-        	<li><a href="{% url 'todolist' %}"><i class="fas fa-clipboard-list fa-lg" ></i> やりたいことリスト</a></li>
-        	<li><a href="{% url 'request' %}"><i class="far fa-comment-dots fa-lg"> </i> リクエスト一覧</a></li>
-        	<li><a href="{% url 'accounts:logout' %}"><i class="fas fa-sign-out-alt fa-lg"></i> ログアウト</a></li>
+            <p class="ham_title">{{ user.username }}のカレンダー</p>
+        	<li><a href="{% url 'todolist' %}" class="atag"><i class="fas fa-clipboard-list fa-lg" ></i> やりたいことリスト</a></li>
+        	<li><a href="{% url 'request' %}" class="atag"><i class="far fa-comment-dots fa-lg"> </i> リクエスト一覧</a></li>
+        	<li><a href="{% url 'accounts:logout' %}" class="atag"><i class="fas fa-sign-out-alt fa-lg"></i> ログアウト</a></li>
+            <li><a href="{% url 'accounts:delete' %}" class="atag">アカウント削除</a></li>
     	</ul>
 	</div>
 </div>

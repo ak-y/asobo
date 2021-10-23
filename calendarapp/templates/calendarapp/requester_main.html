@@ -3,9 +3,10 @@
 
 {% block header %}
 <!--ロゴ-->
-<img src="{% static 'croissant/image/logo.png' %}" alt="ロゴ" class="logo_s">
+<a href="{{'/'}}"><img src="{% static 'croissant/image/logo.png' %}" alt="ロゴ" class="logo_s"></a>
 <!--css-->
 <link rel='stylesheet' type="text/css" href="{% static 'croissant/css/calendar.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'croissant/css/todolist.css' %}">
 <!--fullcalendar-->
 <link href="{% static 'croissant/fullcalendar/main.css' %}" rel='stylesheet'/>
 <script src="{% static 'croissant/fullcalendar/main.js' %}"></script>
@@ -82,16 +83,19 @@
                         location.href = "http://127.0.0.1:8000/authorize_requester"
                         }
                 },
-<!--                todo: {-->
-<!--                    text: 'やりたいこと'-->
-<!--                    click: function() {-->
-<!--            },-->
+                todo: {
+                    text: '一覧',
+                    click: function() {
+                        todo_modal.classList.remove('hidden');
+                        todo_mask.classList.remove('hidden');
+                    },
+                },
             },
 <!--ツールバーのボタン設定-->
             headerToolbar: {
                 left: 'prev,next today',
                 center: 'title',
-                right: 'calendar login'
+                right: 'todo calendar'
             },
 <!--ボタンの名前設定-->
             buttonText: {
@@ -129,13 +133,20 @@
         calendar.render();
 
 <!--ポップアップ画面の処理-->
+      const todo_modal = document.getElementById('todo_modal');
+      const todo_mask = document.getElementById('todo_mask')
       const modal = document.getElementById('modal');
       const mask = document.getElementById('mask');
 
 <!--modalの外が押された-->
       mask.addEventListener('click', function () {
+        todo_modal.classList.add('hidden');
         modal.classList.add('hidden');
         mask.classList.add('hidden');
+      });
+      todo_mask.addEventListener('click', function () {
+        todo_modal.classList.add('hidden');
+        todo_mask.classList.add('hidden');
       });
 
 <!--入力情報に漏れがないか-->
@@ -192,7 +203,7 @@
         <label class="form-label" for="exampleInputEmail"><i class="fas fa-envelope"></i></label>
         <input type="email" class="form-control" id="exampleInputEmail" name="requester_mail_address" placeholder="メールアドレス" required>
         <label class="form-label" for="title"><i class="fas fa-edit"></i></label>
-        <input type="text" class="form-control" id="title" name="title" placeholder="タイトル (例)焼肉" required>
+        <input type="text" class="form-control" id="title" name="title" placeholder="タイトル (例)焼肉" autocomplete="off" required>
         <label class="form-label" for="start_at"><i class="fas fa-sun"></i> 開始</label>
         <input type="datetime-local" class="form-control" id="start_at" name="start_at" required>
         <label class="form-label" for="end_at"><i class="fas fa-moon"></i> 終了</label>
@@ -202,5 +213,31 @@
                   placeholder="メッセージ(任意)&#13;この日に○○行きたいな！"></textarea>
         <button type=submit class="btn btn-primary" id="submit"><i class="fas fa-paper-plane"></i> 申請</button>
     </form>
+</section>
+
+<!--やりたいことリスト-->
+<div id="todo_mask" class="hidden"></div>
+<section id="todo_modal" class="hidden">
+    <div class="todo_list_title">
+        <i class="fas fa-clipboard-list fa-2x"></i><h5 class="todo_list_box">{{ user.username }}さんの<br>やりたいことリスト</h5>
+    </div>
+    <p class="p1"></p>
+    <div style="text-align: center;">
+        <div class="container">
+            {% for todo in todo_list %}
+                <div class="box25">
+                    <strong>{{ todo.title }}</strong>
+                    {% if todo.url %}
+                        <a href="{{ todo.url }}" target="_blank" rel="noopener noreferrer"><i class="fa fa-solid fa-link"></i></a>
+                    {% endif %}
+                </div>
+                <br>
+            {% empty %}
+                <div style="text-align: center;">
+                    <p>やりたいことリストはありません</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
 </section>
 {% endblock content %}
