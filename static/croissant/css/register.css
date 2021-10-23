@@ -1,10 +1,7 @@
-div.field input-group{
-     margin : 0 auto;
-     width: 150;
-}
-.form-group{
-  text-align: left;
-}
 p.p1 {
     margin-bottom: 2em;
+}
+.form-control {
+   /*コレ*/width: 3em;
+    /*コレ*/max-width: 100%;
 }
