@@ -3,13 +3,13 @@
 
 {% block header %}
     <a href="{{'main'}}"><img src="{% static 'croissant/image/logo.png' %}" alt="ロゴ" class="logo_s"></a>
-    <link rel='stylesheet' type="text/css" href="{% static 'croissant/css/request.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'croissant/css/todolist.css' %}">
     <title>やりたいことリスト</title>
 {% endblock header %}
 
 {% block content %}
     <div style="text-align: center;">
-        <h1>やりたいことリスト</h1>
+        <h1><i class="fas fa-clipboard-list" ></i> やりたいことリスト</h1>
     </div>
     <a href="{{ request.META.HTTP_REFERER }}" class="back"><i class="fas fa-arrow-left fa-2x"></i></a>
     <p class="p1"></p>
@@ -32,6 +32,71 @@
                 </div>
             {% endfor %}
         </div>
+        <button type="button" class="btn btn-primary" id="add-todolist"><i class="fas fa-plus-circle"></i> 追加</button>
     </div>
+    <!--やりたいことリスト追加-->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const todolist = document.getElementById('add-todolist');
+    todolist.addEventListener('click', function() {
+        modal.classList.remove('hidden');
+        mask.classList.remove('hidden');
+    });
+<!--ポップアップ画面の処理-->
+    const modal = document.getElementById('modal');
+    const mask = document.getElementById('mask');
 
+<!--modalの外が押された-->
+    mask.addEventListener('click', function () {
+        modal.classList.add('hidden');
+        mask.classList.add('hidden');
+        document.add-todolist.reset();
+    });
+<!--入力情報に漏れがないか-->
+      (function () {
+          'use strict'
+
+          // Fetch all the forms we want to apply custom Bootstrap validation styles to
+          var forms = document.querySelectorAll('.needs-validation')
+
+          // Loop over them and prevent submission
+          Array.prototype.slice.call(forms)
+            .forEach(function (form) {
+              form.addEventListener('submit', function (event) {
+                if (!form.checkValidity()) {
+                  event.preventDefault()
+                  event.stopPropagation()
+                }else{
+                    modal.classList.add('hidden');
+                    mask.classList.add('hidden');
+                    Swal.fire({
+                        title: "送信されました！",
+                        icon: "success",
+                        button: "閉じる",
+                    });
+                };
+
+                form.classList.add('was-validated')
+              }, false)
+            })
+      })()
+});
+</script>
+
+<div id="mask" class="hidden"></div>
+<section id="modal" class="hidden">
+    <form method="post" class="row g-3 needs-validation" name="add-todolist" novalidate>
+        {% csrf_token %}
+        <h3 class="text-center">やりたいこと追加</h3>
+        <div class="mb-3">
+          <label for="formGroupExampleInput" class="form-label"><i class="fas fa-child"></i>やりたいこと</label>
+          <input type="text" class="form-control" id="formGroupExampleInput" placeholder="やりたいこと" name="title" autocomplete="off" required>
+        </div>
+        <div class="mb-3">
+          <label for="todolist-url" class="form-label"><i class="fas fa-link"></i> URL</label>
+          <input type="text" class="form-control" id="todolist-url" placeholder="URL(任意)" name="url" autocomplete="off">
+        </div>
+        <button type=submit id="submit" class="btn btn-primary" name="id"><i class="fas fa-plus-circle"></i> 追加</button>
+    </form>
+</section>
 {% endblock content %}

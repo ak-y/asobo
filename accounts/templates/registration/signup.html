@@ -1,0 +1,60 @@
+{% extends 'calendarapp/base.html' %}
+{% load static %}
+
+{% block header %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+<link rel='stylesheet' type="text/css" href="{% static 'croissant/css/logo.css' %}">
+<!--<link rel='stylesheet' type="text/css" href="{% static 'croissant/css/button.css' %}">-->
+<link rel='stylesheet' type="text/css" href="{% static 'croissant/css/register.css' %}">
+<!--<link rel='stylesheet' type="text/css" href="{% static 'croissant/css/fontawesome.css' %}">-->
+<script src="https://kit.fontawesome.com/9319a33fb6.js" crossorigin="anonymous"></script>
+<a href="{{'/'}}"><img src="{% static 'croissant/image/logo.png' %}" alt="ロゴ" class="logo_b"></a>
+{% endblock header %}
+
+{% block content %}
+<form action="" method="POST">
+    {{ form.non_field_errors }}
+<!--    <h3 class="text-center">ユーザー登録</h3>-->
+    <div class ="form-size">
+        <div class="field input-group">
+            <span class="input-group-text" id="basic-addon1">
+                <i class="fa fa-solid fa-user fa-2x"></i>
+            </span>
+            {{ form.username }}
+        </div>
+        <div class="field input-group">
+            <span class="input-group-text" id="basic-addon2">
+                <i class="fa fa-solid fa-envelope fa-2x"></i>
+            </span>
+            {{ form.email }}
+        </div>
+        <div class="field input-group">
+            <span class="input-group-text" id="basic-addon3">
+                <i class="fa fa-solid fa-lock fa-2x"></i>
+            </span>
+            {{ form.password1 }}
+        </div>
+        <div class="field input-group">
+            <span class="input-group-text" id="basic-addon4">
+                <i class="fa fa-solid fa-lock fa-2x"></i>
+            </span>
+            {{ form.password2 }}
+        </div>
+    </div>
+    <div class="other">
+        <div class="text-center">
+            <h6>連携するアプリ</h6>
+            <button type="submit" class="btn btn-danger btn-lg"><i class="fab fa-google"></i>  Google Calendarと連携</button>
+            <button type="submit" class="btn btn-success btn-lg"><i class="fab fa-envira"></i>  TimeTreeと連携</button>
+
+        </div>
+        <div class="text-center lead">
+            <h6>アカウント登録がお済みの方は</h6>
+            <a class="btn-flat-dashed-border" href="{% url 'accounts:login' %}">こちら</a>
+        </div>
+    </div>
+
+    {% csrf_token %}
+</form>
+
+{% endblock content %}

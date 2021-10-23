@@ -113,14 +113,14 @@
                 logout: {
                     text: 'ログアウト',
                     click: function() {
-                        location.href = "http://127.0.0.1:8000/signout"
+                        window.location.href = "{% url 'accounts:logout' %}"
                     }
                 },
 <!--リクエストボタン-->
                 request: {
                     text: '一覧',
                     click: function() {
-                        location.href = "http://127.0.0.1:8000/request"
+                        window.location.href = "{% url 'request' %}"
                     }
                 },
 <!--シェアボタン-->
@@ -259,9 +259,10 @@
 <div class="menu_wrapper" id="menu_wrapper">
 	<div class="menu">
     	<ul>
-        	<li><a href="#1">メニュー１</a></li>
-        	<li><a href="#2">メニュー２</a></li>
-        	<li><a href="#3">メニュー３</a></li>
+            <p class="p1"></p>
+        	<li><a href="{% url 'todolist' %}"><i class="fas fa-clipboard-list fa-lg" ></i> やりたいことリスト</a></li>
+        	<li><a href="{% url 'request' %}"><i class="far fa-comment-dots fa-lg"> </i> リクエスト一覧</a></li>
+        	<li><a href="{% url 'accounts:logout' %}"><i class="fas fa-sign-out-alt fa-lg"></i> ログアウト</a></li>
     	</ul>
 	</div>
 </div>

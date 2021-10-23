@@ -95,7 +95,7 @@
 	width: 40px;
 	height: 40px;
 	cursor: pointer;
-	background-color: aqua;
+	background-color: #ffa500;
 }
 .ham_line {
 	position: absolute;
@@ -126,15 +126,21 @@
 	transform: rotate(-45deg);
 	top: 20px;
 }
-
+p.p1 {
+    margin-bottom: 2em;
+}
 .menu {
 	position: fixed;
 	width: 300px;
 	height: 300px;
 	left: -400px;
-	background-color: aquamarine;
+	background-color: #ffa500;
 	transition: all 0.3s;
 	z-index: 99999;
+	font-weight: bold;
+	font-size: 15pt;
+	color: #ffa500;
+	line-height: 50px
 }
 .clicked .menu {
 	left: 8px;
