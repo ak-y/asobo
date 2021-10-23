@@ -1,79 +1,9 @@
-img{
-    /*margin-top: 50px;*/
-/*    without h3*/
-    margin-top: 30px;
+.position{
+    text-align: center;
 }
-
-
-h3{
-    margin-top: 40px;
+.form-group{
+  text-align: left;
 }
-
-.form-size{
-    /*margin-left: 65px;*/
-    margin-left: 45px;
-/*    without h3*/
-    margin-top: 45px;
-
+p.p1 {
+    margin-bottom: 2em;
 }
-
-.field{
-    margin-bottom: 10px;
-
-}
-
-input{
-    height:50px;
-    width:200px;
-    border-color: orange;
-    padding: revert;
-}
-
-.other{
-    margin-top: 30px;
-
-}
-
-.other-login{
-    margin-top: 30px;
-    margin-right: 50px;
-}
-button{
-    margin-bottom: 10px;
-
-}
-
-.btn-warning{
-    background-color: orange;
-    color: white;
-}
-
-
-.input-group-text{
-    /*background-color:orange;*/
-    /*color:white;*/
-    background-color:white;
-    color: orange;
-    width:60px;
-    /*border-color: orange;*/
-    border-color: white;
-    overflow: hidden;
-
-}
-
-::placeholder {
-    left: 10px;
-    color: #484848;
- }
-
-.lead{
-    margin-top: 20px;
-}
-
-
-
-
-/*アイコンのずれを修正
-フィールドとアイコンの位置合わせる
-ボタンの色
-プレースホルダー*/
