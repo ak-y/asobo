@@ -33,9 +33,6 @@ def index(request):
     return render(request, 'calendarapp/index.html')
 
 
-
-
-
 @login_required
 def main(request):
     user = request.user
@@ -136,9 +133,11 @@ def request(request):
     })
 
 
+@login_required
 def logout(request):
     logout(request)
     return redirect('login')
+
 
 @login_required
 def todolist(request):
@@ -155,15 +154,11 @@ def todolist(request):
         })
 
 
-
 @login_required
 def delete(request, pk):
     user = request.user
     Todolist.objects.filter(user=user, pk=pk).delete()
     return redirect('todolist')
-
-
-
 
 
 def requester_main(request, crypted_id):
@@ -181,7 +176,7 @@ def requester_main(request, crypted_id):
                                 message=message, start_at=start_at, end_at=end_at)
 
         # メール送信
-        mail_address = 'croissant.calendar@gmail.com'  # user.email
+        mail_address = user.email
         email(requester_name, message, mail_address)
 
         # request.session.clear()
