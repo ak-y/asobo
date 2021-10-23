@@ -39,7 +39,7 @@
                   const startMonth = date.start.month + 1;
                   const endMonth = date.end.month + 1;
                   if (startMonth === endMonth) {
-                     return startMonth + '月';
+                     return  startMonth + '月';
                   } else {
                      return startMonth + '月～' + endMonth + '月';
                   }
@@ -129,7 +129,7 @@
                     click: function() {
                         navigator.clipboard.writeText(url);
                         Swal.fire({
-                            title: url,
+<!--                            title: url,-->
                             html: '<p>クリップボードにコピーされました</p>' +
                                   '<h5>友達に共有して予定を立てよう！</h5>',
                             icon: "success",
@@ -140,9 +140,9 @@
             },
 <!--ツールバーのボタン設定-->
             headerToolbar: {
-                left: 'prev,next today timeGridWeek,timeGridDay',
+                left: 'prev,next today',
                 center: 'title',
-                right: 'share request logout'
+                right: 'share timeGridWeek,timeGridDay'
             },
 <!--ボタンの名前設定-->
             buttonText: {
