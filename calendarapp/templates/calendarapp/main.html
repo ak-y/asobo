@@ -259,11 +259,11 @@
 <div class="menu_wrapper" id="menu_wrapper">
 	<div class="menu">
     	<ul>
-            <p class="p1"></p>
+          <p class="ham_title">{{ user.username }}のカレンダー</p>
         	<li><a href="{% url 'todolist' %}"><i class="fas fa-clipboard-list fa-lg" ></i> やりたいことリスト</a></li>
         	<li><a href="{% url 'request' %}"><i class="far fa-comment-dots fa-lg"> </i> リクエスト一覧</a></li>
         	<li><a href="{% url 'accounts:logout' %}"><i class="fas fa-sign-out-alt fa-lg"></i> ログアウト</a></li>
-            <li><a href="{% url 'accounts:delete' %}"><i class="far fa-trash-alt fa-lg"></i> アカウント削除</a></li>
+          <li><a href="{% url 'accounts:delete' %}"><i class="far fa-trash-alt fa-lg"></i> アカウント削除</a></li>
     	</ul>
 	</div>
 </div>

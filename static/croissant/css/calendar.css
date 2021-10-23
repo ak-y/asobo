@@ -1,3 +1,11 @@
+.atag {
+    color: #fff;
+    text-decoration: none;
+}
+.atag:hover {
+    color: #fff;
+    text-decoration: none;
+}
 #submit {
     background: #f6ad49;
     color: #fff;
@@ -96,6 +104,7 @@
 	height: 40px;
 	cursor: pointer;
 	background-color: #ffa500;
+	border-radius: 20px;
 }
 .ham_line {
 	position: absolute;
@@ -126,6 +135,12 @@
 	transform: rotate(-45deg);
 	top: 20px;
 }
+.ham_title {
+    color: #fff;
+    font-weight: bold;
+    font-size: 25px;
+    margin: 10px 0px 0px 0px;
+}
 p.p1 {
     margin-bottom: 2em;
 }
@@ -140,9 +155,19 @@ p.p1 {
 	font-weight: bold;
 	font-size: 15pt;
 	color: #ffa500;
-	line-height: 50px
+	line-height: 50px;
+	border-radius: 20px;
 }
 .clicked .menu {
 	left: 8px;
 }
 
+.todo_list_title {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+.todo_list_box {
+    text-align: center;
+    margin: 0px 0px 0px 10px;
+}
