@@ -149,14 +149,14 @@ p.p1 {
 	width: 300px;
 	height: 300px;
 	left: -400px;
-	background-color: #ffa500;
+	background-color: #a9a9a9;
 	transition: all 0.3s;
 	z-index: 99999;
 	font-weight: bold;
 	font-size: 15pt;
-	color: #ffa500;
+	color: #a9a9a9;
 	line-height: 50px;
-	border-radius: 20px;
+	/*border-radius: 20px;*/
 }
 .clicked .menu {
 	left: 8px;
@@ -170,4 +170,8 @@ p.p1 {
 .todo_list_box {
     text-align: center;
     margin: 0px 0px 0px 10px;
+}
+
+hr {
+    color: #fff;
 }
