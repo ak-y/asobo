@@ -13,10 +13,6 @@
 
 {% block content %}
 
-{% if form.errors %}
-    {{ form.errors }}
-{% endif %}
-
 <form action="" method="POST">
     {{ form.non_field_errors }}
 <!--    <h3 class="text-center">ユーザー登録</h3>-->
@@ -53,8 +49,8 @@
     <div class="other">
         <div class="text-center">
             <h6>連携するアプリ</h6>
-            <button type="submit" class="btn btn-danger btn-lg"><i class="fab fa-google"></i>  Google Calendarと連携して登録</button>
-            <button type="submit" class="btn btn-success btn-lg"><i class="fab fa-envira"></i>  TimeTreeと連携して登録</button>
+            <button type="submit" class="btn btn-danger btn-lg"><i class="fab fa-google"></i>  Google Calendarと連携</button>
+            <button type="submit" class="btn btn-success btn-lg"><i class="fab fa-envira"></i>  TimeTreeと連携</button>
 
         </div>
         <div class="text-center lead">
@@ -65,5 +61,11 @@
 
     {% csrf_token %}
 </form>
+
+{% comment %}
+{% if form.errors %}
+    {{ form.errors }}
+{% endif %}
+{% endcomment %}
 
 {% endblock content %}
