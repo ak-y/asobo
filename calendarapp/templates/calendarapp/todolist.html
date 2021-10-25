@@ -19,10 +19,10 @@
                 <div class="box25">
                     <strong>{{ todo.title }}</strong>
                     {% if todo.url %}
-                        <a href="{{ todo.url }}" target="_blank" rel="noopener noreferrer"><i class="fa fa-solid fa-link"></i></a>
+                        <a href="{{ todo.url }}" target="_blank" rel="noopener noreferrer"> <i class="fa fa-solid fa-link"></i></a>
                     {% endif %}
                     <a href="{% url 'delete' todo.pk %}">
-                        <p class="right-column"><i class="fa fa-solid fa-trash"></i></p>
+                        <p class="right-column"> <i class="fa fa-solid fa-trash trash_color"></i></p>
                     </a>
                 </div>
                 <br>
@@ -89,7 +89,7 @@ document.addEventListener('DOMContentLoaded', function() {
         {% csrf_token %}
         <h3 class="text-center">やりたいこと追加</h3>
         <div class="mb-3">
-          <label for="formGroupExampleInput" class="form-label"><i class="fas fa-child"></i>やりたいこと</label>
+          <label for="formGroupExampleInput" class="form-label"><i class="fas fa-child"></i> やりたいこと</label>
           <input type="text" class="form-control" id="formGroupExampleInput" placeholder="やりたいこと" name="title" autocomplete="off" required>
         </div>
         <div class="mb-3">
