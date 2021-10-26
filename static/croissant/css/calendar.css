@@ -167,12 +167,12 @@ li {
 	left: 8px;
 }
 
-.todo_list_title {
+.todo_list_title_requester {
     display: flex;
     flex-direction: row;
     align-items: center;
 }
-.todo_list_box {
+.todo_list_box_requester {
     text-align: center;
     margin: 0px 0px 0px 10px;
 }
